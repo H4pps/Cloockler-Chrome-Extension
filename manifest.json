@@ -1,0 +1,11 @@
+{
+    "manifest_version": 3,
+    "name": "Time saver",
+    "version": "0.0.1",
+    "description": "Chrome extension that can help you to save time",
+    "icons": {
+      "16": "/images/test16.png",
+      "48": "/images/test48.png",
+      "128": "/images/test128.png"
+    }
+  }

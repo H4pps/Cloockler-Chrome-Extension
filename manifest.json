@@ -18,5 +18,8 @@
           "https://developer.chrome.com/docs/extensions/*"
         ]
       }
+    ],
+    "permissions": [
+      "tabs"
     ]
   }

@@ -11,6 +11,7 @@ body {
 
 #url-in {
     background-color: #F0F0F0;
+    transition: background-color 325ms linear;
     
     width: 280px;
     padding: 8px 12px;
@@ -26,6 +27,7 @@ body {
 
 #btn-add {
     background-color: #F0F0F0;
+    transition: background-color 325ms linear;
 
     margin-left: 10px;
     padding: 8px 11px;
@@ -60,6 +62,7 @@ body {
 
     background-color: none;
     border-radius: 20px;
+    transition: background-color 325ms linear;
 }
 
 .list-item:hover {
@@ -77,6 +80,8 @@ body {
 }
 
 .delete-button {
+    transition: background-color 325ms linear;
+
     margin-left: 10px;
     padding: 10px 12px;
     background: none;

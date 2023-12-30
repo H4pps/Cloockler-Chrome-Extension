@@ -38,3 +38,12 @@ body {
 #btn-add:hover {
     background-color: #EAEAEA;
 }
+
+.list-container {
+    background-color: #F0F0F0;
+    
+    margin: 20px 10px;
+    height: 150px;
+    overflow-y: auto;
+    border-radius: 7px;
+}

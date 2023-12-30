@@ -38,7 +38,12 @@ body {
 }
 
 #btn-add:hover {
-    background-color: #EAEAEA;
+    background-color: #E8E8E8;
+}
+
+#btn-add:active {
+    transition: none;
+    background-color: #d8d8d8;
 }
 
 #error-p {
@@ -92,4 +97,9 @@ body {
 
 .delete-button:hover {
     background-color: rgba(255, 0, 0, 0.2);
+}
+
+.delete-button:active {
+    transition: none;
+    background-color: rgba(255, 0, 0, 0.3);
 }

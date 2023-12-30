@@ -15,7 +15,7 @@ inputField.addEventListener("keypress", function(event){
     }
 });
 
-function inputEvent() {
+function inputEvent() { // add handling only the hostname inputs like "google.com", add further validation like find dots etc
     try {
         const site = extractHostname(inputField.value);
         if (sites.includes(site)){
@@ -25,7 +25,7 @@ function inputEvent() {
         sites.push(site);
         addElementToDisplay(document.getElementById("url-list"), site);
         saveSitesListToMemory(); // can be changed later to save to only on closing the window #CHANGE
-        
+
         document.getElementById("error-p").textContent = "";
         inputField.value = "";
     } catch (error) {

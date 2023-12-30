@@ -16,9 +16,10 @@ inputField.addEventListener("keypress", function(event){
 });
 
 function inputEvent() {
-    const site = inputField.value; // getting the string from intput field
+    //const site = inputField.value; // getting the string from intput field
     
-    if (isCorrectURL(site) && !sites.includes(site)) {
+    const site = extractHostname(inputField.value)
+    if (site != null && !sites.includes(site)) {
         sites.push(site);
         addElementToDisplay(document.getElementById("url-list"), site);
         saveSitesListToMemory(); // can be changed later to save to only on closing the window #CHANGE
@@ -26,6 +27,14 @@ function inputEvent() {
 
     inputField.value = "";
     console.log(sites);
+}
+
+function extractHostname(url) { // return null if the URL is not in correct format
+    try {
+        return (new URL(url)).hostname
+    } catch (error) {
+        return null;
+    }
 }
 
 function isCorrectURL(URL) { // change later to connection check #CHANGE

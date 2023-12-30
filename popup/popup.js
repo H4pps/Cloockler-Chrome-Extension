@@ -25,6 +25,7 @@ function inputEvent() {
         sites.push(site);
         addElementToDisplay(document.getElementById("url-list"), site);
         saveSitesListToMemory(); // can be changed later to save to only on closing the window #CHANGE
+        
         document.getElementById("error-p").textContent = "";
         inputField.value = "";
     } catch (error) {

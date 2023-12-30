@@ -39,14 +39,17 @@ body {
     background-color: #EAEAEA;
 }
 
+#error-p {
+    color: red;
+    margin: 5px 10px;
+}
+
 #blocklist-section {
     margin: 20px 10px;
 }
 
-.list-container {
-    /* background-color: #F0F0F0; */
 
-    /* margin: 20px 10px; */
+.list-container {
     height: 150px;
     overflow-y: auto;
 }

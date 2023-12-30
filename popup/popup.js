@@ -16,24 +16,29 @@ inputField.addEventListener("keypress", function(event){
 });
 
 function inputEvent() {
-    //const site = inputField.value; // getting the string from intput field
-    
-    const site = extractHostname(inputField.value)
-    if (site != null && !sites.includes(site)) {
+    try {
+        const site = extractHostname(inputField.value);
+        if (sites.includes(site)){
+            throw new Error("URL hostname is already in the list.");
+        }
+        
         sites.push(site);
         addElementToDisplay(document.getElementById("url-list"), site);
         saveSitesListToMemory(); // can be changed later to save to only on closing the window #CHANGE
+        document.getElementById("error-p").textContent = "";
+        inputField.value = "";
+    } catch (error) {
+        document.getElementById("error-p").textContent = error.message;
+    } finally {
+        console.log(sites);   
     }
-
-    inputField.value = "";
-    console.log(sites);
 }
 
 function extractHostname(url) { // return null if the URL is not in correct format
     try {
         return (new URL(url)).hostname
     } catch (error) {
-        return null;
+        throw new Error("URL is not in the correct format.");
     }
 }
 

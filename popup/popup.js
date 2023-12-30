@@ -62,10 +62,11 @@ function addElementToDisplay(urlList, URL) { // adding an HTML object representi
     newItem.className = 'list-item';
     
     const itemUrl = document.createElement("span"); // displaying URL
+    itemUrl.className = "url-span";
     itemUrl.textContent = URL;
     const deleteButton = document.createElement("button"); // delete button
-    deleteButton.className = "delte-button";
-    deleteButton.textContent = "x";
+    deleteButton.className = "delete-button";
+    deleteButton.textContent = "✕"
     deleteButton.onclick = function() { // setting the delete
         deleteItem(ID, itemUrl.textContent);
     }

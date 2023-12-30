@@ -68,7 +68,9 @@ body {
     width: 280px;
     padding: 8px 13px;
 
-    text-overflow: 20;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .delete-button {

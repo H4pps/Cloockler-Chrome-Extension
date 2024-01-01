@@ -13,13 +13,19 @@
     },
     "content_scripts": [
       {
-        "js": ["scripts/content.js"],
+        "js": [
+          "scripts/content.js"
+        ],
         "matches": [
-          "https://developer.chrome.com/docs/extensions/*"
+          "<all_urls>"
         ]
       }
     ],
+    "background": {
+        "service_worker": "scripts/background.js"
+    },
     "permissions": [
-      "tabs"
+      "tabs",
+      "storage"
     ]
   }

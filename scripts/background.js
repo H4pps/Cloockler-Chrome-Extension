@@ -1,10 +1,21 @@
+const sitesSavingID = "savedSites";
+
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
     if (changeInfo.status === 'complete') { // loading of the tab was complete
-        const msgStart = {
-            text: "Start update event",
-            url: tab.url
-        }
+        chrome.storage.sync.get([sitesSavingID],(data) => {
+            let sites = [];
+            if (typeof data[sitesSavingID] != "undefined") {
+                sites = JSON.parse(data[sitesSavingID]);
+            }
 
-        chrome.tabs.sendMessage(tab.id, msgStart)  
+            if (sites.includes((new URL(tab.url)).hostname)) {
+                const msgStart = {
+                    text: "Start blocking event",
+                    url: tab.url
+                }
+
+                chrome.tabs.sendMessage(tab.id, msgStart)  
+            }
+        });
     }
 });

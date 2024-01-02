@@ -60,6 +60,7 @@ function saveSitesListToMemory() { // saving sites to the local storage memory
 }
 
 function renderList() {
+    console.log(sites);
     const urlList = document.getElementById("url-list");
     for (let i = 0; i < sites.length; ++i) {
         addElementToDisplay(urlList, sites[i]);

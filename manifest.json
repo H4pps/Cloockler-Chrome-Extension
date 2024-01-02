@@ -13,11 +13,14 @@
     },
     "content_scripts": [
       {
-        "js": [
-          "scripts/content.js"
-        ],
         "matches": [
           "<all_urls>"
+        ],
+        "css": [
+          "scripts/content.css"
+        ],
+        "js": [
+          "scripts/content.js"
         ]
       }
     ],

@@ -1,6 +1,11 @@
+let previousHostname = null;
 chrome.runtime.onMessage.addListener(getMessage);
+
 function getMessage(message, sender, sendResponse) {
-    if (message.text === "Start blocking event") {
+    console.log("received message")
+    if (message.text === "Start blocking event" && message.hostname != previousHostname) {
+        previousHostname = message.hostname; // preventing blocking the same hostname several times in a row
+
         let durationInSeconds = 15;
 
         const blockingWindow = document.createElement("div");

@@ -1,9 +1,6 @@
-#blocking-section {
-    border: none;
-}
-
-#blocking-window {
+#blocking-window-blocking-extension {
     background-color: #ffffff;
+
     position: fixed;
     margin: 0;
     width: 100%;
@@ -11,4 +8,20 @@
     top: 0;
     left: 0;
     z-index: 99999999999;
+}
+
+#blocking-timer-section-blocking-extension {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: black;
+}
+
+#timer-header-blocking-extension {
+    color: black;
+}
+
+#timer-countdown-blocking-extension {
+    color: black;
 }

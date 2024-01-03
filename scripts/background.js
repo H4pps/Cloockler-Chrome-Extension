@@ -4,7 +4,6 @@ const tabIdToPreviousHostname = new Map();
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
     if (changeInfo.status === 'complete') { // loading of the tab was complete
         chrome.storage.sync.get([sitesSavingID],(data) => {
-            console.log("myMap", tabIdToPreviousHostname);
             let sites = [];
             if (typeof data[sitesSavingID] != "undefined") {
                 sites = JSON.parse(data[sitesSavingID]);

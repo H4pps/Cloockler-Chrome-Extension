@@ -2,11 +2,10 @@ let previousHostname = null;
 chrome.runtime.onMessage.addListener(getMessage);
 
 function getMessage(message, sender, sendResponse) {
-    console.log("received message")
     if (message.text === "Start blocking event" && message.hostname != previousHostname) {
         previousHostname = message.hostname; // preventing blocking the same hostname several times in a row
 
-        let durationInSeconds = 15;
+        let durationInSeconds = 5; // setting time for the countdown timer
 
         const blockingWindow = document.createElement("div");
         blockingWindow.id = "blocking-window-blocking-extension";
@@ -39,8 +38,6 @@ function getMessage(message, sender, sendResponse) {
 
         // Update the timer every second
         let timerInterval = setInterval(updateTimer, 1000);
-
-        console.log("event has ended");
     } 
 }
 

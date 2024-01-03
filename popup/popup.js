@@ -1,10 +1,10 @@
 const inputField = document.getElementById("url-in");
 const addButton = document.getElementById("btn-add");
-const localStorageSavedID = "savedSites";
+const sitesSavingID = "savedSites";
 let sites = []; // can be done with a map in the future #CHANGE
 
-getSitesListFromMemory();
-console.log(sites)
+preload();
+//console.log(sites)
 renderList();
 
 addButton.addEventListener("click", inputEvent);
@@ -43,27 +43,24 @@ function extractHostname(url) { // return null if the URL is not in correct form
     }
 }
 
-function isCorrectURL(URL) { // change later to connection check #CHANGE
-    if (URL == "") {
-        console.log("ERROR: empty URL!");
-        return false;
-    }
+function preload() { // getting sites array from the memory and dispalying them (because of asynchronious behaviour)
+    chrome.storage.sync.get([sitesSavingID],(data) => {
+        if (typeof data[sitesSavingID] === "undefined") {
+            saveSitesListToMemory(); // defining the value in the memory
+        } else {
+            sites = JSON.parse(data[sitesSavingID]);
+        }
 
-    return true;
-}
-
-function getSitesListFromMemory() { // the whole function can be more efficient, but it's okay for now #CHANGE
-    const sitesFromMemory = JSON.parse(localStorage.getItem(localStorageSavedID));
-    if (sitesFromMemory) { // null checking
-        sites = sitesFromMemory;
-    }
+        renderList();
+    });
 }
 
 function saveSitesListToMemory() { // saving sites to the local storage memory
-    localStorage.setItem(localStorageSavedID, JSON.stringify(sites));
+    chrome.storage.sync.set({[sitesSavingID]: JSON.stringify(sites)});
 }
 
 function renderList() {
+    console.log(sites);
     const urlList = document.getElementById("url-list");
     for (let i = 0; i < sites.length; ++i) {
         addElementToDisplay(urlList, sites[i]);

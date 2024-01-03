@@ -1,0 +1,39 @@
+#blocking-window-blocking-extension {
+    background-color: #000000f0;
+
+    position: fixed;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 99999999999;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#blocking-timer-section-blocking-extension {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#timer-header-blocking-extension {
+    color: white;
+    font-weight: normal;
+    font-style: normal;
+    font-size: 40px;
+    font-family: sans-serif;
+}
+
+#timer-countdown-blocking-extension {
+    color: white;
+    font-weight: normal;
+    font-style: normal;
+    font-size: 40px;
+    font-family: sans-serif;
+}

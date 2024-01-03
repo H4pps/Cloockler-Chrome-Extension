@@ -25,14 +25,13 @@ function getMessage(message, sender, sendResponse) {
         document.body.appendChild(blockingWindow);
 
         function updateTimer() {
-            timerCountdown.textContent = convertSecondsToTimerText(durationInSeconds);
-
-            durationInSeconds--;
+            --durationInSeconds;
 
             if (durationInSeconds < 0) {
                 clearInterval(timerInterval);
-                timerCountdown.textContent = 'Timer Expired!';
                 blockingWindow.remove();
+            } else {
+                timerCountdown.textContent = convertSecondsToTimerText(durationInSeconds);
             }
         }
 

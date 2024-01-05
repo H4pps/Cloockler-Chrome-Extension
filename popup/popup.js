@@ -37,6 +37,19 @@ function inputEvent() { // add handling only the hostname inputs like "google.co
 
 function extractHostname(url) { // return null if the URL is not in correct format
     try {
+        if (!url.startsWith("https://") && !url.startsWith('http://')) { // adding "https://" if the string does not start with that
+            url = "https://" + url;
+        }
+        
+        let flag = false;
+        url.split('.').forEach(function(number) {
+            if (number.length === 0) {
+                flag = true;
+            }
+        });
+        if (flag || !url.includes('.')) {
+            throw new Error("URL is not in the correct format.");
+        }
         return (new URL(url)).hostname
     } catch (error) {
         throw new Error("URL is not in the correct format.");

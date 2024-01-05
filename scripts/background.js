@@ -1,3 +1,8 @@
+chrome.runtime.onUpdateAvailable.addListener(function() {
+    console.log("updating extension to the newest version");
+    chrome.runtime.reload();
+});
+
 const sitesSavingID = "savedSites";
 const tabIdToPreviousHostname = new Map();
 
@@ -16,7 +21,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
                     hostname: hostname
                 }
 
-                chrome.tabs.sendMessage(tab.id, msgStart)  
+                chrome.tabs.sendMessage(tab.id, msgStart);
             }
 
             tabIdToPreviousHostname.set(tabId, hostname);

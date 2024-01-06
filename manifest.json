@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "Cloockler: no more distractions",
     "version": "0.1.0",
-    "description": "Blocks unnecessary distractions!",
+    "description": "Blocks unnecessary distractions",
     "icons": {
       "128": "/images/icon-128.png"
     },

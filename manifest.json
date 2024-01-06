@@ -1,6 +1,6 @@
 {
     "manifest_version": 3,
-    "name": "Time saver",
+    "name": "Cloockler: no more distractions",
     "version": "0.1.0",
     "description": "Chrome extension that can help you to save time",
     "icons": {

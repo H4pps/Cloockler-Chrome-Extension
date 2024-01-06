@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "Cloockler: no more distractions",
     "version": "0.1.0",
-    "description": "Chrome extension that can help you to save time",
+    "description": "Blocks unnecessary distractions!",
     "icons": {
       "128": "/images/icon-128.png"
     },

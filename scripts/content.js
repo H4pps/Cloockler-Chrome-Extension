@@ -18,7 +18,7 @@ function getMessage(message, sender, sendResponse) {
         timer.id = "blocking-timer-section-blocking-extension";
         const timerHeader = document.createElement("h1");
         timerHeader.id = "timer-header-blocking-extension";
-        timerHeader.textContent = "Will be available in:";
+        timerHeader.textContent = "You still have time to change your mind";
         const timerCountdown = document.createElement("h1");
         timerCountdown.id = "timer-countdown-blocking-extension";
         timerCountdown.textContent = convertSecondsToTimerText(durationInSeconds);

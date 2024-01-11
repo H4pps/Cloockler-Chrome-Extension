@@ -13,7 +13,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
             if (typeof data[sitesSavingID] != "undefined") {
                 sites = JSON.parse(data[sitesSavingID]);
             }
-
+            
             const hostname = (new URL(tab.url)).hostname; // getting the hostname
             if (sites.includes(hostname) && !equalPreviousURL(tabId, hostname)) {
                 const msgStart = {

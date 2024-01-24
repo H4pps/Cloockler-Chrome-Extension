@@ -5,7 +5,7 @@ let sites = []; // can be done with a map in the future #CHANGE
 
 preload();
 //console.log(sites)
-renderList();
+//renderList();
 
 addButton.addEventListener("click", inputEvent);
 inputField.addEventListener("keypress", function(event){
@@ -50,7 +50,11 @@ function extractHostname(url) { // return null if the URL is not in correct form
         if (flag || !url.includes('.')) {
             throw new Error("URL is not in the correct format.");
         }
-        return (new URL(url)).hostname
+
+        const hostnameLastArray = (new URL(url)).hostname.split('.').splice(-2);
+        const hostname = hostnameLastArray[0] + '.' + hostnameLastArray[1];
+
+        return hostname;
     } catch (error) {
         throw new Error("URL is not in the correct format.");
     }
@@ -81,7 +85,7 @@ function renderList() {
 }
 
 function addElementToDisplay(urlList, URL) { // adding an HTML object representing the new element (with given URL)
-    const newItem = document.createElement("div"); // wrap for the URL and delete button
+    const newItem = document.createElement("div"); // the wrap for the URL and delete button
     const ID = Math.random(); // setting a random id to the HTML object
     newItem.id = "item-" + ID;
     newItem.className = 'list-item';
@@ -92,7 +96,7 @@ function addElementToDisplay(urlList, URL) { // adding an HTML object representi
     const deleteButton = document.createElement("button"); // delete button
     deleteButton.className = "delete-button";
     deleteButton.textContent = "✕"
-    deleteButton.onclick = function() { // setting the delete
+    deleteButton.onclick = function() { // setting the delete function
         deleteItem(ID, itemUrl.textContent);
     }
 

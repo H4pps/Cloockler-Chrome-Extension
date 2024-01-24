@@ -14,7 +14,9 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
                 sites = JSON.parse(data[sitesSavingID]);
             }
             
-            const hostname = (new URL(tab.url)).hostname; // getting the hostname
+            const hostnameLastArray = (new URL(tab.url)).hostname.split('.').splice(-2);
+            const hostname = hostnameLastArray[0] + '.' + hostnameLastArray[1];
+
             if (sites.includes(hostname) && !equalPreviousURL(tabId, hostname)) {
                 const msgStart = {
                     text: "Start blocking event",

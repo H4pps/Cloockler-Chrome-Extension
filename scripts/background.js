@@ -35,25 +35,22 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
     else if (message.text === "set to list") { // adding site to blocklist/allowlist
         try {
-            const hostnameLastArray = (new URL(message.url)).hostname.split('.').splice(-2); // D
-            const hostname = hostnameLastArray[0] + '.' + hostnameLastArray[1];
+            const hostname = extractHostname(message.url);
             if (isBlocklistMode) {
-                addSiteToList(hostname, sites.blocklist);
+                checkIncludes(hostname, sites.blocklist);
                 //saveSitesListToMemory(blocklistSavingID, sites.blocklist);
             } else {
-                addSiteToList(hostname, sites.allowlist);
+                checkIncludes(hostname, sites.allowlist);
                 //saveSitesListToMemory(allowlistSavingID, sites.allowlist);
             }
             sendResponse({type: "OK", hostname: hostname});
         } catch(error) {
-            console.log("Error while adding a url occured");
-            console.log("Background error:", error);
-            sendResponse({type: "ERROR"});
+            sendResponse({type: "ERROR", message: error.message});
         }
     }
 });
 
-let addSiteToList = (site, sitesList) => {
+let checkIncludes = (site, sitesList) => {
     if (sitesList.includes(site)) {
         throw new Error("URL hostname is already in the list");
     }

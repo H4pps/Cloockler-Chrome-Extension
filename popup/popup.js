@@ -22,31 +22,13 @@ function inputEvent() {
     chrome.runtime.sendMessage({text: "set to list", url: inputField.value}, (response) => {
         console.log("Popup response:", response);
         if (response.type === "ERROR") {
-            document.getElementById("error-p").textContent = error.type;
+            document.getElementById("error-p").textContent = response.message;
         } else {
             addElementToDisplay(response.hostname);
             document.getElementById("error-p").textContent = "";
             inputField.value = "";
         }
     });
-
-    // try {
-    //     const site = extractHostname(inputField.value);
-    //     if (sites.includes(site)){
-    //         throw new Error("URL hostname is already in the list.");
-    //     }
-        
-    //     sites.push(site);
-    //     addElementToDisplay(sites, document.getElementById("url-list"), site);
-    //     saveSitesListToMemory(sites); // can be changed later to save to only on closing the window #CHANGE
-
-    //     document.getElementById("error-p").textContent = "";
-    //     inputField.value = "";
-    // } catch (error) {
-    //     document.getElementById("error-p").textContent = error.message;
-    // } finally {
-    //     console.log(sites);   
-    // }
 }
 
 // function extractHostname(url) { // return null if the URL is not in correct format

@@ -2,11 +2,7 @@ let previousHostname = null;
 chrome.runtime.onMessage.addListener(getMessage);
 
 function getMessage(message, sender, sendResponse) {
-    // document.head.innerHTML += `<link rel="preconnect" href="https://fonts.googleapis.com">
-    // <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    // <link href="https://fonts.googleapis.com/css2?family=Varela&display=swap" rel="stylesheet">`
-
-    if (message.text === "Start blocking event") {
+    if (message.text === "start blocking event") {
         previousHostname = message.hostname; // preventing blocking the same hostname several times in a row
 
         let durationInSeconds = 15; // setting time for the countdown timer

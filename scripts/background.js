@@ -1,25 +1,100 @@
-chrome.runtime.onUpdateAvailable.addListener(function() {
+//const blocklistSavingID = "blocklistSaved";
+const blocklistSavingID = "savedSites";
+const allowlistSavingID = "allowlistSaved";
+let isBlocklistMode = true;
+
+const sites = {
+    blocklist: ["monkeytype.com", "typeracer.com"],
+    allowlist: []
+};
+
+const tabIdToPreviousHostname = new Map();
+
+chrome.runtime.onUpdateAvailable.addListener(() => {
     console.log("updating extension to the newest version");
     chrome.runtime.reload();
 });
 
-const sitesSavingID = "savedSites";
-const tabIdToPreviousHostname = new Map();
+chrome.runtime.onStartup.addListener(() => {
+    sites.blocklist = loadSiteList(blocklistSavingID);
+    sites.allowlist = loadSiteList(allowlistSavingID);
+});
 
-chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-    if (changeInfo.status === 'complete') { // loading of the tab was complete
-        chrome.storage.sync.get([sitesSavingID],(data) => {
-            let sites = [];
-            if (typeof data[sitesSavingID] != "undefined") {
-                sites = JSON.parse(data[sitesSavingID]);
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    console.log("Current list in the background.js", sites.blocklist);
+    if (message.text === "get list mode") { // asking for the blocklist/allowlist mode
+        sendResponse({mode: isBlocklistMode});
+    } else if (message.text === "set list mode") { // setting the blocklist/allowlist mode
+        isBlocklistMode = message.mode;
+    }
+    else if (message.text === "get current list") { // sending the list with the given mode
+        response = {list: []};
+        response.list = message.mode? sites.blocklist : sites.allowlist;
+
+        sendResponse(response);
+    }
+    else if (message.text === "set to list") { // adding site to blocklist/allowlist
+        try {
+            const hostnameLastArray = (new URL(message.url)).hostname.split('.').splice(-2); // D
+            const hostname = hostnameLastArray[0] + '.' + hostnameLastArray[1];
+            if (isBlocklistMode) {
+                addSiteToList(hostname, sites.blocklist);
+                //saveSitesListToMemory(blocklistSavingID, sites.blocklist);
+            } else {
+                addSiteToList(hostname, sites.allowlist);
+                //saveSitesListToMemory(allowlistSavingID, sites.allowlist);
             }
-            
-            const hostnameLastArray = (new URL(tab.url)).hostname.split('.').splice(-2);
+            sendResponse("OK");
+        } catch(error) {
+            console.log("Error while adding a url occured");
+            sendResponse("ERROR");
+        }
+    }
+});
+
+let addSiteToList = (site, sitesList) => {
+    if (sitesList.includes(site)) {
+        throw new Error("URL hostname is already in the list");
+    }
+
+    sitesList.push(site);
+}
+
+let extractHostname = (url) => { // returns null if the URL is not in correct format
+    try {
+        if (!url.startsWith("https://") && !url.startsWith('http://')) { // adding "https://" if the string does not start with that
+            url = "https://" + url;
+        }
+        
+        let flag = false;
+        url.split('.').forEach(function(number) {
+            if (number.length === 0) {
+                flag = true;
+            }
+        });
+        if (flag || !url.includes('.')) {
+            throw new Error("URL is not in the correct format.");
+        }
+
+        const hostnameLastArray = (new URL(url)).hostname.split('.').splice(-2); // DRY!
+        const hostname = hostnameLastArray[0] + '.' + hostnameLastArray[1];
+
+        return hostname;
+    } catch (error) {
+        throw new Error("URL is not in the correct format.");
+    }
+}
+
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if (changeInfo.status === 'complete') { // loading of the tab was complete
+        chrome.storage.sync.get([blocklistSavingID]).then((data) => {
+            loadSiteList(blocklistSavingID, data);
+            const hostnameLastArray = (new URL(tab.url)).hostname.split('.').splice(-2); // getting high-domain of the url
             const hostname = hostnameLastArray[0] + '.' + hostnameLastArray[1];
 
-            if (sites.includes(hostname) && !equalPreviousURL(tabId, hostname)) {
+            if (sites.blocklist.includes(hostname) && !equalPreviousURL(tabId, hostname)) {
                 const msgStart = {
-                    text: "Start blocking event",
+                    text: "start blocking event",
                     hostname: hostname
                 }
 
@@ -28,6 +103,26 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 
             tabIdToPreviousHostname.set(tabId, hostname);
         });
+        // chrome.storage.sync.get([blocklistSavingID],(data) => {
+        //     let sites = [];
+        //     if (typeof data[blocklistSavingID] != "undefined") {
+        //         sites = JSON.parse(data[blocklistSavingID]);
+        //     }
+            
+        //     const hostnameLastArray = (new URL(tab.url)).hostname.split('.').splice(-2);
+        //     const hostname = hostnameLastArray[0] + '.' + hostnameLastArray[1];
+
+        //     if (sites.includes(hostname) && !equalPreviousURL(tabId, hostname)) {
+        //         const msgStart = {
+        //             text: "Start blocking event",
+        //             hostname: hostname
+        //         }
+
+        //         chrome.tabs.sendMessage(tab.id, msgStart);
+        //     }
+
+        //     tabIdToPreviousHostname.set(tabId, hostname);
+        // });
     }
 });
 
@@ -40,3 +135,20 @@ function equalPreviousURL(tabId, hostname) {
 
     return hostname === previousURL;
 }
+
+let loadSiteList = (sitesSavingID) => {
+    chrome.storage.sync.get([sitesSavingID],(data) => {
+        if (typeof data[sitesSavingID] === "undefined") { // checks if the key exists
+            //saveSitesListToMemory(sites); // defining the value in the memory
+            console.log("There is no sites in the memory")
+
+            return [];
+        } else {
+            return JSON.parse(data[sitesSavingID]);
+        }
+    });
+};
+
+let saveSiteListToMemory = (sitesSavingID, siteList) => { // saving sites to the local storage memory
+    chrome.storage.sync.set({[sitesSavingID]: JSON.stringify(siteList)});
+};

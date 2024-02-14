@@ -21,7 +21,7 @@ chrome.runtime.onStartup.addListener(() => {
 });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    console.log("Current list in the background.js", sites.blocklist);
+    // console.log("Current list in the background.js", sites.blocklist);
     if (message.text === "get list mode") { // asking for the blocklist/allowlist mode
         sendResponse({mode: isBlocklistMode});
     } else if (message.text === "set list mode") { // setting the blocklist/allowlist mode
@@ -44,10 +44,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 addSiteToList(hostname, sites.allowlist);
                 //saveSitesListToMemory(allowlistSavingID, sites.allowlist);
             }
-            sendResponse("OK");
+            sendResponse({type: "OK", hostname: hostname});
         } catch(error) {
             console.log("Error while adding a url occured");
-            sendResponse("ERROR");
+            console.log("Background error:", error);
+            sendResponse({type: "ERROR"});
         }
     }
 });

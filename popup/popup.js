@@ -17,7 +17,6 @@ inputField.addEventListener("keypress", function(event){
     }
 });
 
-// add handling only the hostname inputs like "google.com", add further validation like find dots etc
 function inputEvent() {
     chrome.runtime.sendMessage({text: "set to list", url: inputField.value}, (response) => {
         console.log("Popup response:", response);
@@ -32,13 +31,13 @@ function inputEvent() {
 }
 
 // getting sites array from the memory and dispalying them (because of asynchronious behaviour)
-function preload() {
+function preload () {
     chrome.runtime.sendMessage({text: "get list mode"})
     .then((response) => {
         // console.log("Current mode is blocklist:", response.mode);
         return response.mode;
     })
-    .then((mode) => {
+    .then((mode) => { 
         // console.log("Mode passed to .then: ", mode);
         return chrome.runtime.sendMessage({text: "get current list", mode: mode});
     })
@@ -47,6 +46,12 @@ function preload() {
         // console.log("List returned to the popup.js:", response.list);
         renderList(response.list);
     });
+
+    // copying the current tab url to the input field
+    chrome.tabs.query({active: true, currentWindow: true}).then(tabs => { 
+        console.log(tabs[0].url);
+        inputField.value = tabs[0].url;
+    })
 }
 
 let renderList = (siteList) => {
@@ -55,7 +60,7 @@ let renderList = (siteList) => {
     }
 };
 
-let addElementToDisplay = (URL) => { // adding an HTML object representing the new element (with given URL)
+let addElementToDisplay = URL => { // adding an HTML object representing the new element (with given URL)
     const newItem = document.createElement("div"); // the wrap for the URL and delete button
     const ID = Math.random(); // setting a random id to the HTML object
     newItem.id = "item-" + ID;
@@ -78,7 +83,7 @@ let addElementToDisplay = (URL) => { // adding an HTML object representing the n
     urlList.appendChild(newItem);
 };
 
-let deleteDisplayItem = (ID) => { // deleting ab HTML object representing deleted element
+let deleteDisplayItem = ID => { // deleting ab HTML object representing deleted element
     let listContainer = document.getElementById("url-list");
     var itemToDelete = document.getElementById('item-' + ID);
     listContainer.removeChild(itemToDelete);

@@ -109,7 +109,7 @@ let extractHostname = (url) => { // returns null if the URL is not in correct fo
     }
 }
 
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => { // executes every time when the tab was updated/added
     if (changeInfo.status === 'complete') { // loading of the tab was complete
         chrome.storage.sync.get([blocklistSavingID]).then((data) => {
             loadSiteList(blocklistSavingID, data);

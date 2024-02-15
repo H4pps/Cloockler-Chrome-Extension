@@ -31,31 +31,6 @@ function inputEvent() {
     });
 }
 
-// function extractHostname(url) { // return null if the URL is not in correct format
-//     try {
-//         if (!url.startsWith("https://") && !url.startsWith('http://')) { // adding "https://" if the string does not start with that
-//             url = "https://" + url;
-//         }
-        
-//         let flag = false;
-//         url.split('.').forEach(function(number) {
-//             if (number.length === 0) {
-//                 flag = true;
-//             }
-//         });
-//         if (flag || !url.includes('.')) {
-//             throw new Error("URL is not in the correct format.");
-//         }
-
-//         const hostnameLastArray = (new URL(url)).hostname.split('.').splice(-2);
-//         const hostname = hostnameLastArray[0] + '.' + hostnameLastArray[1];
-
-//         return hostname;
-//     } catch (error) {
-//         throw new Error("URL is not in the correct format.");
-//     }
-// }
-
 // getting sites array from the memory and dispalying them (because of asynchronious behaviour)
 function preload() {
     chrome.runtime.sendMessage({text: "get list mode"})
@@ -72,15 +47,6 @@ function preload() {
         // console.log("List returned to the popup.js:", response.list);
         renderList(response.list);
     });
-    // chrome.storage.sync.get([sitesSavingID],(data) => {
-    //     if (typeof data[sitesSavingID] === "undefined") {
-    //         saveSitesListToMemory(sites); // defining the value in the memory
-    //     } else {
-    //         sites = JSON.parse(data[sitesSavingID]);
-    //     }
-
-    //     renderList(sites);
-    // });
 }
 
 let renderList = (siteList) => {
@@ -102,36 +68,14 @@ let addElementToDisplay = (URL) => { // adding an HTML object representing the n
     deleteButton.className = "delete-button";
     deleteButton.textContent = "✕"
     deleteButton.onclick = () => { // setting the delete function
-        deleteItem(ID, itemUrl.textContent);
+        chrome.runtime.sendMessage({text: "delete from list", url: itemUrl.textContent});
+        deleteDisplayItem(ID);
     }
 
     newItem.appendChild(itemUrl);
     newItem.appendChild(deleteButton);
 
     urlList.appendChild(newItem);
-};
-
-let deleteItem = (ID, Url) => {
-    const index = findIndexOfUrl(sites, Url);
-    if (index != null) {
-        deleteDisplayItem(ID);
-        sites.splice(index, 1);
-
-        saveSitesListToMemory();
-    } else {
-        console.error(`ERROR 1: don't have that URL in the database. URL: ${Url}`);
-        console.log(sites);
-    }
-};
-
-let findIndexOfUrl = (sites, Url) => {
-    for (let i = 0; i < sites.length; ++i) {
-        if (Url === sites[i]) {
-            return i;
-        }
-    }
-
-    return null
 };
 
 let deleteDisplayItem = (ID) => { // deleting ab HTML object representing deleted element

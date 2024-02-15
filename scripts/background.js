@@ -47,8 +47,34 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         } catch(error) {
             sendResponse({type: "ERROR", message: error.message});
         }
+    } 
+    else if (message.text === "delete from list") {
+        if (isBlocklistMode) {
+            deleteItem(sites.blocklist, message.url);
+            //saveSiteListToMemory(blocklistSavingID, sites.blocklist);
+        } else {
+            deleteItem(sites.allowlist, message.url);
+            //saveSiteListToMemory(allowlistSavingID, sites.allowlist);
+        }
     }
 });
+
+let deleteItem = (siteList, hostname) => {
+    const index = findIndexOfUrl(siteList, hostname);
+    siteList.splice(index, 1);
+
+    //saveSiteListToMemory();
+}
+
+let findIndexOfUrl = (sitesList, hostname) => {
+    for (let i = 0; i < sitesList.length; ++i) {
+        if (hostname === sitesList[i]) {
+            return i;
+        }
+    }
+
+    return null;
+}
 
 let checkIncludes = (site, sitesList) => {
     if (sitesList.includes(site)) {
@@ -101,26 +127,6 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
             tabIdToPreviousHostname.set(tabId, hostname);
         });
-        // chrome.storage.sync.get([blocklistSavingID],(data) => {
-        //     let sites = [];
-        //     if (typeof data[blocklistSavingID] != "undefined") {
-        //         sites = JSON.parse(data[blocklistSavingID]);
-        //     }
-            
-        //     const hostnameLastArray = (new URL(tab.url)).hostname.split('.').splice(-2);
-        //     const hostname = hostnameLastArray[0] + '.' + hostnameLastArray[1];
-
-        //     if (sites.includes(hostname) && !equalPreviousURL(tabId, hostname)) {
-        //         const msgStart = {
-        //             text: "Start blocking event",
-        //             hostname: hostname
-        //         }
-
-        //         chrome.tabs.sendMessage(tab.id, msgStart);
-        //     }
-
-        //     tabIdToPreviousHostname.set(tabId, hostname);
-        // });
     }
 });
 

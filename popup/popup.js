@@ -33,15 +33,15 @@ function inputEvent() {
 // getting sites array from the memory and dispalying them (because of asynchronious behaviour)
 function preload () {
     chrome.runtime.sendMessage({text: "get list mode"})
-    .then((response) => {
+    .then(response => {
         // console.log("Current mode is blocklist:", response.mode);
         return response.mode;
     })
-    .then((mode) => { 
+    .then(mode => { 
         // console.log("Mode passed to .then: ", mode);
         return chrome.runtime.sendMessage({text: "get current list", mode: mode});
     })
-    .then((response) => {
+    .then(response => {
         // console.log("Returned response to 'get current list'", response);
         // console.log("List returned to the popup.js:", response.list);
         renderList(response.list);
@@ -54,7 +54,7 @@ function preload () {
     })
 }
 
-let renderList = (siteList) => {
+let renderList = siteList => {
     for (let i = 0; i < siteList.length; ++i) {
         addElementToDisplay(siteList[i]);
     }

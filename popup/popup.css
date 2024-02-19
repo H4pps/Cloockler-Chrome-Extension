@@ -55,6 +55,100 @@ body {
     margin: 20px 10px;
 }
 
+#blocking-settings {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin: 20px 10px 10px 10px;
+}
+
+#btn-mode {
+    background-color: #F0F0F0;
+    transition: background-color 85ms linear;
+
+    padding: 8px 12px;
+    border: none;
+    border-radius: 30px;
+
+    font-size: 22px;
+}
+
+#btn-mode:hover {
+    background-color: #E8E8E8;
+}
+
+#btn-mode:active {
+    transition: none;
+    background-color: #d8d8d8;
+}
+
+#blocking-time-section {
+    display: flex;
+    align-items: center;
+}
+
+#blocking-text, #seconds-text  {
+    font-size: 15px;
+    margin-right: 10px;
+}
+
+#input-seconds {
+    background-color: #F0F0F0;
+    transition: background-color 85ms linear;
+    
+    width: 25px;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 20px;
+
+    font-size: 18px;
+    text-align: center;
+    /* height: 20px; */
+}
+
+input[type="number"]::-webkit-inner-spin-button, 
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+#arrow-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    
+    margin-left: 3px;
+}
+
+#btn-increment-arrow, #btn-decrement-arrow {
+    background-color: #F0F0F0;
+    transition: background-color 85ms linear;
+
+    padding: 2px 4px;
+    border: none;
+    border-radius: 30px;
+
+    font-size: 7px;
+}
+
+
+#btn-increment-arrow:hover, #btn-decrement-arrow:hover {
+    background-color: #E8E8E8;
+}
+
+#btn-increment-arrow:active, #btn-decrement-arrow:active {
+    transition: none;
+    background-color: #d8d8d8;
+}
+
+/* #input-seconds:focus {
+    width: 35px;
+} */
+
+#list-settings{
+    margin: 20px 10px;
+}
 
 .list-container {
     height: 150px;

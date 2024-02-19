@@ -3,6 +3,10 @@ const blocklistSavingID = "savedSites";
 const allowlistSavingID = "allowlistSaved";
 let isBlocklistMode = true;
 
+let blockingTime = 15;
+const maxBlockingTime = 60;
+const minBlockingTime = 5;
+
 const sites = {
     blocklist: ["monkeytype.com", "typeracer.com"],
     allowlist: []

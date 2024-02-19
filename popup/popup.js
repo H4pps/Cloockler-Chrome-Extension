@@ -1,5 +1,11 @@
 const inputField = document.getElementById("url-in");
 const addButton = document.getElementById("btn-add");
+
+const modeButton = document.getElementById("btn-mode");
+const inputSecondsField = document.getElementById("input-seconds");
+const incrementArrowButton = document.getElementById("btn-increment-arrow");
+const decrementArrowButton = document.getElementById("btn-decrement-arrow");
+
 const sitesSavingID = "savedSites";
 //let sites = []; // can be done with a map in the future #CHANGE
 

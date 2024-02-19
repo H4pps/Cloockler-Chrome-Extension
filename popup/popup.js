@@ -2,12 +2,9 @@ const inputField = document.getElementById("url-in");
 const addButton = document.getElementById("btn-add");
 
 const modeButton = document.getElementById("btn-mode");
-const inputSecondsField = document.getElementById("input-seconds");
+const secondsCounter = document.getElementById("seconds-counter");
 const incrementArrowButton = document.getElementById("btn-increment-arrow");
 const decrementArrowButton = document.getElementById("btn-decrement-arrow");
-
-const sitesSavingID = "savedSites";
-//let sites = []; // can be done with a map in the future #CHANGE
 
 const urlList = document.getElementById("url-list"); // wrapper div for the list of URLs 
 
@@ -28,7 +25,8 @@ function inputEvent() {
         console.log("Popup response:", response);
         if (response.type === "ERROR") {
             document.getElementById("error-p").textContent = response.message;
-        } else {
+        } 
+        else {
             addElementToDisplay(response.hostname);
             document.getElementById("error-p").textContent = "";
             inputField.value = "";
@@ -36,8 +34,27 @@ function inputEvent() {
     });
 }
 
+incrementArrowButton.addEventListener("click", event => {
+    chrome.runtime.sendMessage({text: "set blocking time", time: parseInt(secondsCounter.value) + 1})
+    .then(response => {
+        secondsCounter.value = response.time;
+    });
+});
+
+decrementArrowButton.addEventListener("click", event => {
+    chrome.runtime.sendMessage({text: "set blocking time", time: parseInt(secondsCounter.value) - 1})
+    .then(response => {
+        secondsCounter.value = response.time;
+    });
+});
+
 // getting sites array from the memory and dispalying them (because of asynchronious behaviour)
 function preload () {
+    chrome.runtime.sendMessage({text: "get blocking time"})
+    .then(response => {
+        secondsCounter.value = response.time;
+    });
+
     chrome.runtime.sendMessage({text: "get list mode"})
     .then(response => {
         // console.log("Current mode is blocklist:", response.mode);

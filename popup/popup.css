@@ -93,9 +93,8 @@ body {
     margin-right: 10px;
 }
 
-#input-seconds {
+#seconds-counter {
     background-color: #F0F0F0;
-    transition: background-color 85ms linear;
     
     width: 25px;
     padding: 10px 12px;
@@ -104,13 +103,6 @@ body {
 
     font-size: 18px;
     text-align: center;
-    /* height: 20px; */
-}
-
-input[type="number"]::-webkit-inner-spin-button, 
-input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
 }
 
 #arrow-section {

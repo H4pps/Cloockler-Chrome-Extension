@@ -28,7 +28,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // console.log("Current list in the background.js", sites.blocklist);
     if (message.text === "get list mode") { // asking for the blocklist/allowlist mode
         sendResponse({mode: isBlocklistMode});
-    } else if (message.text === "set list mode") { // setting the blocklist/allowlist mode
+    } 
+    else if (message.text === "set list mode") { // setting the blocklist/allowlist mode
         isBlocklistMode = message.mode;
     }
     else if (message.text === "get current list") { // sending the list with the given mode
@@ -61,6 +62,19 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             //saveSiteListToMemory(allowlistSavingID, sites.allowlist);
         }
     }
+    else if (message.text === "get blocking time") {
+        sendResponse({time: blockingTime});
+    }
+    else if (message.text === "set blocking time") {
+        console.log("New time:", message.time);
+        if (message.time >= minBlockingTime && message.time <= maxBlockingTime) {
+            blockingTime = message.time;
+            sendResponse({type: "OK", time: blockingTime});
+        } 
+        else {
+            sendResponse({type: "ERROR", time: blockingTime});
+        }
+    }  
 });
 
 let deleteItem = (siteList, hostname) => {

@@ -5,7 +5,7 @@ function getMessage(message, sender, sendResponse) {
     if (message.text === "start blocking event") {
         previousHostname = message.hostname; // preventing blocking the same hostname several times in a row
 
-        let durationInSeconds = 15; // setting time for the countdown timer
+        let durationInSeconds = message.time; // setting time for the countdown timer
 
         const blockingWindow = document.createElement("div");
         blockingWindow.id = "blocking-window-blocking-extension";

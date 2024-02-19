@@ -137,6 +137,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => { // executes ever
             if (sites.blocklist.includes(hostname) && !equalPreviousURL(tabId, hostname)) {
                 const msgStart = {
                     text: "start blocking event",
+                    time: blockingTime,
                     hostname: hostname
                 }
 

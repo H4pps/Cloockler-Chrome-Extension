@@ -131,12 +131,30 @@ let extractHostname = (url) => { // returns null if the URL is not in correct fo
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => { // executes every time when the tab was updated/added
     if (changeInfo.status === 'complete') { // loading of the tab was complete
-        chrome.storage.sync.get([blocklistSavingID]).then((data) => {
-            loadSiteList(blocklistSavingID, data);
-            const hostnameLastArray = (new URL(tab.url)).hostname.split('.').splice(-2); // getting high-domain of the url
-            const hostname = hostnameLastArray[0] + '.' + hostnameLastArray[1];
+        // chrome.storage.sync.get([blocklistSavingID]).then((data) => {
+        //     loadSiteList(blocklistSavingID, data);
+        //     const hostnameLastArray = (new URL(tab.url)).hostname.split('.').splice(-2); // getting high-domain of the url
+        //     const hostname = hostnameLastArray[0] + '.' + hostnameLastArray[1];
 
-            if (sites.blocklist.includes(hostname) && !equalPreviousURL(tabId, hostname)) {
+        //     if (sites.blocklist.includes(hostname) && !equalPreviousURL(tabId, hostname)) {
+        //         const msgStart = {
+        //             text: "start blocking event",
+        //             time: blockingTime,
+        //             hostname: hostname
+        //         }
+
+        //         chrome.tabs.sendMessage(tab.id, msgStart);
+        //     }
+
+        //     tabIdToPreviousHostname.set(tabId, hostname);
+        // });
+
+        // const hostnameLastArray = (new URL(tab.url)).hostname.split('.').splice(-2); // getting high-domain of the url
+        // const hostname = hostnameLastArray[0] + '.' + hostnameLastArray[1];
+        if (!tab.url.startsWith("chrome://")) { // #CHANGE with filtering later
+            const hostname = extractHostname(tab.url);
+
+            if (checkBlocking(hostname) && !equalPreviousURL(tabId, hostname)) {
                 const msgStart = {
                     text: "start blocking event",
                     time: blockingTime,
@@ -146,10 +164,18 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => { // executes ever
                 chrome.tabs.sendMessage(tab.id, msgStart);
             }
 
-            tabIdToPreviousHostname.set(tabId, hostname);
-        });
+            tabIdToPreviousHostname.set(tabId, hostname);   
+        }
     }
 });
+
+let checkBlocking = hostname => {
+    if (isBlocklistMode) {
+        return sites.blocklist.includes(hostname);
+    }
+
+    return !sites.allowlist.includes(hostname);
+}
 
 chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
     tabIdToPreviousHostname.delete(tabId);

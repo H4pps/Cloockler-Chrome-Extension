@@ -69,7 +69,7 @@ function preload () {
     chrome.runtime.sendMessage({text: "get list mode"})
     .then(response => {
         // console.log("Current mode is blocklist:", response.mode);
-        modeButton.value = response.mode ? "Blocklist" : "Allowlist";
+        modeButton.textContent = response.mode ? "Blocklist" : "Allowlist";
         return chrome.runtime.sendMessage({text: "get current list", mode: response.mode});
     })
     .then(response => {

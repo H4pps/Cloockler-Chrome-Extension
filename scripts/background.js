@@ -9,7 +9,7 @@ const minBlockingTime = 5;
 
 const sites = {
     blocklist: ["monkeytype.com", "typeracer.com"],
-    allowlist: []
+    allowlist: ["github.com", "codeforces.com"]
 };
 
 const tabIdToPreviousHostname = new Map();
@@ -29,8 +29,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.text === "get list mode") { // asking for the blocklist/allowlist mode
         sendResponse({mode: isBlocklistMode});
     } 
-    else if (message.text === "set list mode") { // setting the blocklist/allowlist mode
-        isBlocklistMode = message.mode;
+    else if (message.text === "change list mode") { // setting the blocklist/allowlist mode
+        console.log("Mode changed");
+        isBlocklistMode = !isBlocklistMode;
+        sendResponse({mode: isBlocklistMode});
     }
     else if (message.text === "get current list") { // sending the list with the given mode
         response = {list: []};

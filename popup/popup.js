@@ -44,8 +44,19 @@ incrementArrowButton.addEventListener("click", event => {
 decrementArrowButton.addEventListener("click", event => {
     chrome.runtime.sendMessage({text: "set blocking time", time: parseInt(secondsCounter.value) - 1})
     .then(response => {
-        secondsCounter.value = response.time;
+        secondsCounter.textContent = response.time;
     });
+});
+
+modeButton.addEventListener("click", event => {
+    chrome.runtime.sendMessage({text: "change list mode"})
+    .then(response => {
+        modeButton.textContent = response.mode ? "Blocklist" : "Allowlist";
+        return chrome.runtime.sendMessage({text: "get current list", mode: response.mode});
+    })
+    .then(response => {
+        renderList(response.list);
+    })
 });
 
 // getting sites array from the memory and dispalying them (because of asynchronious behaviour)
@@ -58,11 +69,8 @@ function preload () {
     chrome.runtime.sendMessage({text: "get list mode"})
     .then(response => {
         // console.log("Current mode is blocklist:", response.mode);
-        return response.mode;
-    })
-    .then(mode => { 
-        // console.log("Mode passed to .then: ", mode);
-        return chrome.runtime.sendMessage({text: "get current list", mode: mode});
+        modeButton.value = response.mode ? "Blocklist" : "Allowlist";
+        return chrome.runtime.sendMessage({text: "get current list", mode: response.mode});
     })
     .then(response => {
         // console.log("Returned response to 'get current list'", response);
@@ -78,6 +86,7 @@ function preload () {
 }
 
 let renderList = siteList => {
+    urlList.innerHTML = "";
     for (let i = 0; i < siteList.length; ++i) {
         addElementToDisplay(siteList[i]);
     }

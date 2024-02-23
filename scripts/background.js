@@ -3,7 +3,7 @@ const blocklistSavingID = "savedSites";
 const allowlistSavingID = "allowlistSaved";
 let isBlocklistMode = true;
 
-let blockingTime = 15;
+let blockingTime;
 const maxBlockingTime = 60;
 const minBlockingTime = 5;
 
@@ -22,6 +22,7 @@ chrome.runtime.onUpdateAvailable.addListener(() => {
 chrome.runtime.onStartup.addListener(() => {
     sites.blocklist = loadSiteList(blocklistSavingID);
     sites.allowlist = loadSiteList(allowlistSavingID);
+    blockignTime = 15; // leave for now
 });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {

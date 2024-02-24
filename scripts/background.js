@@ -1,6 +1,6 @@
-//const blocklistSavingID = "blocklistSaved";
-const blocklistSavingID = "savedSites";
+const blocklistSavingID = "blocklistSaved";
 const allowlistSavingID = "allowlistSaved";
+const blockingTimeSavignID = "blockingTime";
 let isBlocklistMode = true;
 
 let blockingTime;

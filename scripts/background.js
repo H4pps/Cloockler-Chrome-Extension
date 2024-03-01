@@ -3,7 +3,7 @@ const allowlistSavingID = "allowlistSaved";
 const blockingTimeSavignID = "blockingTime";
 let isBlocklistMode = true;
 
-let blockingTime;
+let blockingTime = 15;
 const maxBlockingTime = 60;
 const minBlockingTime = 5;
 
@@ -22,7 +22,7 @@ chrome.runtime.onUpdateAvailable.addListener(() => {
 chrome.runtime.onStartup.addListener(() => {
     sites.blocklist = loadSiteList(blocklistSavingID);
     sites.allowlist = loadSiteList(allowlistSavingID);
-    blockignTime = 15; // leave for now
+    blockingTime = 15; // leave for now
 });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -156,16 +156,19 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => { // executes ever
             const hostname = extractHostname(tab.url);
 
             if (checkBlocking(hostname) && !equalPreviousURL(tabId, hostname)) {
-                const msgStart = {
-                    text: "start blocking event",
-                    time: blockingTime,
-                    hostname: hostname
-                }
 
-                chrome.tabs.sendMessage(tab.id, msgStart);
-            }
-
-            tabIdToPreviousHostname.set(tabId, hostname);   
+                const navigatingURL = tab.url;
+                chrome.tabs.update(tab.id, {url: "blockPage.html"})
+                .then(() => {
+                    tabIdToPreviousHostname.set(tabId, hostname);  
+                    setTimeout(() => chrome.tabs.update(tab.id, {url: navigatingURL}), 5000);
+                })
+                .then(() => {
+                    console.log("done");
+                    //chrome.tabs.update(tab.id, {url: navigatingURL});
+                });
+                
+            } 
         }
     }
 });

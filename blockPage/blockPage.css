@@ -1,4 +1,4 @@
-#video-wrapper {
+/* #video-wrapper {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -6,15 +6,6 @@
 }
 
 #video-background {
-    /* position: fixed;
-    top: auto;
-    left: auto;
-    min-width: auto;
-    min-height: auto;
-    z-index: -1; 
-    object-fit: cover; */
-            /* width: auto;
-            height: auto; */
             min-width: 100%;
             min-height: 100%;
             width: auto;
@@ -23,4 +14,16 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+} */
+
+#content-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
+
+/* body {
+    background-image: url(twinPeaksWaiting.gif);
+    background-size: cover;
+} */

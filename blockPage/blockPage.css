@@ -1,20 +1,3 @@
-/* #video-wrapper {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-#video-background {
-            min-width: 100%;
-            min-height: 100%;
-            width: auto;
-            height: auto;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-} */
 
 #content-wrapper {
     display: flex;
@@ -23,7 +6,13 @@
     align-items: center;
 }
 
-/* body {
+body {
     background-image: url(twinPeaksWaiting.gif);
+    background-repeat: no-repeat;
     background-size: cover;
-} */
+    background-position: center;
+    min-height: 100vh;
+    min-width: 100vh;   
+    margin: 0;
+    overflow: hidden;
+}

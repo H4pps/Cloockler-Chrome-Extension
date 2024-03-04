@@ -158,10 +158,12 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => { // executes ever
             if (checkBlocking(hostname) && !equalPreviousURL(tabId, hostname)) {
 
                 const navigatingURL = tab.url;
-                chrome.tabs.update(tab.id, {url: "blockPage.html"})
+                chrome.tabs.update(tab.id, {url: "blockPage/blockPage.html"})
                 .then(() => {
                     tabIdToPreviousHostname.set(tabId, hostname);  
                     setTimeout(() => chrome.tabs.update(tab.id, {url: navigatingURL}), 5000);
+                    chrome.runtime.sendMessage({text: "check blockpage"});
+                    // error when user closes the tab before the end of the blocking
                 })
                 .then(() => {
                     console.log("done");

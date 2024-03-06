@@ -17,5 +17,6 @@ body {
 
 .blocking-text {
     color: white;
-    font-size: calc(1.5vw + 1.5vh);
+    font-size: calc(1.7vw + 1.7vh);
+    margin: 2vh;
 }

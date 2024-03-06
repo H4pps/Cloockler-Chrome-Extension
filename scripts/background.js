@@ -4,6 +4,10 @@ const blockingTimeSavignID = "blockingTime";
 let isBlocklistMode = true;
 
 let blockingTime = 15;
+export let getBlockingTime = () => {
+    return blockingTime;
+}
+
 const maxBlockingTime = 60;
 const minBlockingTime = 5;
 
@@ -36,7 +40,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         sendResponse({mode: isBlocklistMode});
     }
     else if (message.text === "get current list") { // sending the list with the given mode
-        response = {list: []};
+        let response = {list: []};
         response.list = message.mode? sites.blocklist : sites.allowlist;
 
         sendResponse(response);
@@ -156,12 +160,12 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => { // executes ever
             const hostname = extractHostname(tab.url);
 
             if (checkBlocking(hostname) && !equalPreviousURL(tabId, hostname)) {
-
                 const navigatingURL = tab.url;
                 chrome.tabs.update(tab.id, {url: "blockPage/blockPage.html"})
                 .then(() => {
+                    console.log("Blocking time: " + blockingTime);
                     tabIdToPreviousHostname.set(tabId, hostname);  
-                    setTimeout(() => chrome.tabs.update(tab.id, {url: navigatingURL}), 5000);
+                    setTimeout(() => chrome.tabs.update(tab.id, {url: navigatingURL}), 15000);
                     chrome.runtime.sendMessage({text: "check blockpage"});
                     // error when user closes the tab before the end of the blocking
                 })
@@ -188,7 +192,7 @@ chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
 });
 
 function equalPreviousURL(tabId, hostname) {
-    previousURL = tabIdToPreviousHostname.get(tabId);
+    const previousURL = tabIdToPreviousHostname.get(tabId);
 
     return hostname === previousURL;
 }

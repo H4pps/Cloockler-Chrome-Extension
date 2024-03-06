@@ -30,3 +30,10 @@
 
 //         // Update the timer every second
 //         let timerInterval = setInterval(updateTimer, 1000);
+
+const blockingText = document.getElementById("blocking-timer");
+
+chrome.runtime.sendMessage({text: "get blocking time"})
+.then(response => {
+    blockingText.textContent += response.time;
+});

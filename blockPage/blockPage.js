@@ -10,7 +10,6 @@ chrome.runtime.sendMessage({text: "get blocking time"})
 
         if (durationInSeconds < 0) {
             clearInterval(timerInterval);
-            blockingWindow.remove();
         } else {
             timerCountdown.textContent = convertSecondsToTimerText(durationInSeconds);
         }

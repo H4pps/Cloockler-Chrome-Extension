@@ -1,20 +1,15 @@
-const blocklistSavingID = "blocklistSaved";
-const allowlistSavingID = "allowlistSaved";
-const blockingTimeSavignID = "blockingTime";
-let isBlocklistMode = true;
-
-let blockingTime = 15;
-export let getBlockingTime = () => {
-    return blockingTime;
+const dataSavingID = "dataSaving";
+let programData = {
+    sites: {
+        blocklist: [],
+        allowlist: []
+    },
+    blockingTime: 15,
+    isBlocklistMode: true
 }
 
 const maxBlockingTime = 60;
 const minBlockingTime = 5;
-
-const sites = {
-    blocklist: ["monkeytype.com", "typeracer.com"],
-    allowlist: ["github.com", "codeforces.com"]
-};
 
 const tabIdToPreviousHostname = new Map();
 
@@ -23,37 +18,57 @@ chrome.runtime.onUpdateAvailable.addListener(() => {
     chrome.runtime.reload();
 });
 
-chrome.runtime.onStartup.addListener(() => {
-    sites.blocklist = loadSiteList(blocklistSavingID);
-    sites.allowlist = loadSiteList(allowlistSavingID);
-    blockingTime = 15; // leave for now
+chrome.runtime.onStartup.addListener(async () => {
+    getProgramDataFromMemory(dataSavingID);
 });
 
+let saveDataToMemory = (data, savingID) => {
+    chrome.storage.sync.set({[savingID]: JSON.stringify(data)});
+}
+
+let getProgramDataFromMemory = savingID => {
+    chrome.storage.sync.get([savingID])
+    .then(data => {
+        if (data[savingID] === "undefined") {
+            console.log(`There is not data with ID ${savingID} in the memory`);
+            programData = {
+                sites: {
+                    blocklist: [],
+                    allowlist: []
+                },
+                blockingTime: 15,
+                isBlocklistMode: true
+            }
+        } else {
+            programData = JSON.parse(data[savingID ]);
+        }
+    });
+}
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    // console.log("Current list in the background.js", sites.blocklist);
     if (message.text === "get list mode") { // asking for the blocklist/allowlist mode
-        sendResponse({mode: isBlocklistMode});
+        sendResponse({mode: programData.isBlocklistMode});
     } 
     else if (message.text === "change list mode") { // setting the blocklist/allowlist mode
         console.log("Mode changed");
-        isBlocklistMode = !isBlocklistMode;
-        sendResponse({mode: isBlocklistMode});
+        programData.isBlocklistMode = !programData.isBlocklistMode;
+        sendResponse({mode: programData.isBlocklistMode});
     }
     else if (message.text === "get current list") { // sending the list with the given mode
         let response = {list: []};
-        response.list = message.mode? sites.blocklist : sites.allowlist;
+        response.list = message.mode? programData.sites.blocklist : programData.sites.allowlist;
 
         sendResponse(response);
     }
     else if (message.text === "set to list") { // adding site to blocklist/allowlist
         try {
             const hostname = extractHostname(message.url);
-            if (isBlocklistMode) {
-                checkIncludes(hostname, sites.blocklist);
-                //saveSitesListToMemory(blocklistSavingID, sites.blocklist);
+            if (programData.isBlocklistMode) {
+                checkIncludes(hostname, programData.sites.blocklist);
+                saveDataToMemory(programData, dataSavingID);
             } else {
-                checkIncludes(hostname, sites.allowlist);
-                //saveSitesListToMemory(allowlistSavingID, sites.allowlist);
+                checkIncludes(hostname, programData.sites.allowlist);
+                saveDataToMemory(programData, dataSavingID);
             }
             sendResponse({type: "OK", hostname: hostname});
         } catch(error) {
@@ -61,25 +76,25 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         }
     } 
     else if (message.text === "delete from list") {
-        if (isBlocklistMode) {
-            deleteItem(sites.blocklist, message.url);
-            //saveSiteListToMemory(blocklistSavingID, sites.blocklist);
+        if (programData.isBlocklistMode) {
+            deleteItem(programData.sites.blocklist, message.url);
+            saveDataToMemory(programData, dataSavingID);
         } else {
-            deleteItem(sites.allowlist, message.url);
-            //saveSiteListToMemory(allowlistSavingID, sites.allowlist);
+            deleteItem(programData.sites.allowlist, message.url);
+            saveDataToMemory(programData, dataSavingID);
         }
     }
     else if (message.text === "get blocking time") {
-        sendResponse({time: blockingTime});
+        sendResponse({time: programData.blockingTime});
     }
     else if (message.text === "set blocking time") {
         console.log("New time:", message.time);
         if (message.time >= minBlockingTime && message.time <= maxBlockingTime) {
-            blockingTime = message.time;
-            sendResponse({type: "OK", time: blockingTime});
+            programData.blockingTime = message.time;
+            sendResponse({type: "OK", time: programData.blockingTime});
         } 
         else {
-            sendResponse({type: "ERROR", time: blockingTime});
+            sendResponse({type: "ERROR", time: programData.blockingTime});
         }
     }  
 });
@@ -87,8 +102,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 let deleteItem = (siteList, hostname) => {
     const index = findIndexOfUrl(siteList, hostname);
     siteList.splice(index, 1);
-
-    //saveSiteListToMemory();
 }
 
 let findIndexOfUrl = (sitesList, hostname) => {
@@ -136,26 +149,6 @@ let extractHostname = (url) => { // returns null if the URL is not in correct fo
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => { // executes every time when the tab was updated/added
     if (changeInfo.status === 'complete') { // loading of the tab was complete
-        // chrome.storage.sync.get([blocklistSavingID]).then((data) => {
-        //     loadSiteList(blocklistSavingID, data);
-        //     const hostnameLastArray = (new URL(tab.url)).hostname.split('.').splice(-2); // getting high-domain of the url
-        //     const hostname = hostnameLastArray[0] + '.' + hostnameLastArray[1];
-
-        //     if (sites.blocklist.includes(hostname) && !equalPreviousURL(tabId, hostname)) {
-        //         const msgStart = {
-        //             text: "start blocking event",
-        //             time: blockingTime,
-        //             hostname: hostname
-        //         }
-
-        //         chrome.tabs.sendMessage(tab.id, msgStart);
-        //     }
-
-        //     tabIdToPreviousHostname.set(tabId, hostname);
-        // });
-
-        // const hostnameLastArray = (new URL(tab.url)).hostname.split('.').splice(-2); // getting high-domain of the url
-        // const hostname = hostnameLastArray[0] + '.' + hostnameLastArray[1];
         if (!tab.url.startsWith("chrome://")) { // #CHANGE with filtering later
             const hostname = extractHostname(tab.url);
 
@@ -165,14 +158,9 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => { // executes ever
                 .then(() => {
                     console.log("Blocking time: " + blockingTime);
                     tabIdToPreviousHostname.set(tabId, hostname);  
-                    setTimeout(() => chrome.tabs.update(tab.id, {url: navigatingURL}), 15000);
-                    chrome.runtime.sendMessage({text: "check blockpage"});
-                    // error when user closes the tab before the end of the blocking
+                    
+                    setTimeout(() => chrome.tabs.update(tab.id, {url: navigatingURL}), programData.blockingTime * 100 + 50);
                 })
-                .then(() => {
-                    console.log("done");
-                    //chrome.tabs.update(tab.id, {url: navigatingURL});
-                });
                 
             } 
         }
@@ -180,11 +168,11 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => { // executes ever
 });
 
 let checkBlocking = hostname => {
-    if (isBlocklistMode) {
-        return sites.blocklist.includes(hostname);
+    if (programData.isBlocklistMode) {
+        return programData.sites.blocklist.includes(hostname);
     }
 
-    return !sites.allowlist.includes(hostname);
+    return !programData.sites.allowlist.includes(hostname);
 }
 
 chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
@@ -196,20 +184,3 @@ function equalPreviousURL(tabId, hostname) {
 
     return hostname === previousURL;
 }
-
-let loadSiteList = (sitesSavingID) => {
-    chrome.storage.sync.get([sitesSavingID],(data) => {
-        if (typeof data[sitesSavingID] === "undefined") { // checks if the key exists
-            //saveSitesListToMemory(sites); // defining the value in the memory
-            console.log("There is no sites in the memory")
-
-            return [];
-        } else {
-            return JSON.parse(data[sitesSavingID]);
-        }
-    });
-};
-
-let saveSiteListToMemory = (sitesSavingID, siteList) => { // saving sites to the local storage memory
-    chrome.storage.sync.set({[sitesSavingID]: JSON.stringify(siteList)});
-};

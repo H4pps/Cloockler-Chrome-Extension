@@ -54,6 +54,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     else if (message.text === "change list mode") { // setting the blocklist/allowlist mode
         console.log("Mode changed");
         programData.isBlocklistMode = !programData.isBlocklistMode;
+        saveDataToMemory(programData, dataSavingID);
         sendResponse({mode: programData.isBlocklistMode});
     }
     else if (message.text === "get current list") { // sending the list with the given mode
@@ -93,6 +94,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         console.log("New time:", message.time);
         if (message.time >= minBlockingTime && message.time <= maxBlockingTime) {
             programData.blockingTime = message.time;
+            saveDataToMemory(programData, dataSavingID);
             sendResponse({type: "OK", time: programData.blockingTime});
         } 
         else {

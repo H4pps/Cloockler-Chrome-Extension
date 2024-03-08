@@ -45,6 +45,8 @@ let getProgramDataFromMemory = savingID => {
     });
 }
 
+getProgramDataFromMemory(dataSavingID);
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.text === "get list mode") { // asking for the blocklist/allowlist mode
         sendResponse({mode: programData.isBlocklistMode});
@@ -156,7 +158,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => { // executes ever
                 const navigatingURL = tab.url;
                 chrome.tabs.update(tab.id, {url: "blockPage/blockPage.html"})
                 .then(() => {
-                    console.log("Blocking time: " + blockingTime);
+                    console.log("Blocking time: " + programData.blockingTime);
                     tabIdToPreviousHostname.set(tabId, hostname);  
                     
                     setTimeout(() => chrome.tabs.update(tab.id, {url: navigatingURL}), programData.blockingTime * 100 + 50);

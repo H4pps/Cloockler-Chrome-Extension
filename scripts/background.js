@@ -52,7 +52,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         sendResponse({mode: programData.isBlocklistMode});
     } 
     else if (message.text === "change list mode") { // setting the blocklist/allowlist mode
-        console.log("Mode changed");
         programData.isBlocklistMode = !programData.isBlocklistMode;
         saveDataToMemory(programData, dataSavingID);
         sendResponse({mode: programData.isBlocklistMode});
@@ -91,7 +90,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         sendResponse({time: programData.blockingTime});
     }
     else if (message.text === "set blocking time") {
-        console.log("New time:", message.time);
         if (message.time >= minBlockingTime && message.time <= maxBlockingTime) {
             programData.blockingTime = message.time;
             saveDataToMemory(programData, dataSavingID);
@@ -155,20 +153,21 @@ let extractHostname = (url) => {
     }
 }
 
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => { // executes every time when the tab was updated/added
+// executes every time when the tab was updated/added
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     // start when the tab was loaded
     if (changeInfo.status === 'complete') {
-        if (!tab.url.startsWith("chrome://")) { // #CHANGE with filtering later
+        if (!tab.url.startsWith("chrome://") && !tab.url.startsWith("chrome-extension://")) { // #CHANGE with filtering later
             const hostname = extractHostname(tab.url);
 
             if (checkBlocking(hostname) && !equalPreviousURL(tabId, hostname)) {
+                // adding the tabId to the map of all current tabs
+                // (preventing blocking the same website serveral times in a row)
+                tabIdToPreviousHostname.set(tabId, hostname); 
+
                 const navigatingURL = tab.url;
                 chrome.tabs.update(tab.id, {url: "blockPage/blockPage.html"})
-                .then(() => {
-                    // adding the tabId ot the map of all current tabs
-                    // (preventing blocking the same website serveral times in a row)
-                    tabIdToPreviousHostname.set(tabId, hostname);  
-                    
+                .then(() => {  
                     setTimeout(() => {
                         // checking if the tab was closed while timeout
                         if (tabIdToPreviousHostname.has(tab.id)) {
@@ -176,7 +175,6 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => { // executes ever
                         }
                     }, programData.blockingTime * 1000 + 200);
                 })
-                
             } 
         }
     }
@@ -195,7 +193,7 @@ chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
 });
 
 function equalPreviousURL(tabId, hostname) {
-    const previousURL = tabIdToPreviousHostname.get(tabId);
+    //const previousURL = tabIdToPreviousHostname.get(tabId);
 
-    return hostname === previousURL;
+    return hostname === tabIdToPreviousHostname.get(tabId);
 }

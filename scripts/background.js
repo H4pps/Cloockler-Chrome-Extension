@@ -155,9 +155,8 @@ let extractHostname = (url) => {
 
 // executes every time when the tab was updated/added
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    // start when the tab was loaded
-    if (changeInfo.status === 'complete') {
-        if (!tab.url.startsWith("chrome://") && !tab.url.startsWith("chrome-extension://")) { // #CHANGE with filtering later
+    if (!tab.url.startsWith("chrome://") && !tab.url.startsWith("chrome-extension://")) {
+        if (changeInfo.status === 'complete') {
             const hostname = extractHostname(tab.url);
 
             if (checkBlocking(hostname) && !equalPreviousURL(tabId, hostname)) {

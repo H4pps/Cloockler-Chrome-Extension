@@ -159,7 +159,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         if (changeInfo.status === 'complete') {
             const hostname = extractHostname(tab.url);
 
-            if (checkBlocking(hostname) && !equalPreviousURL(tabId, hostname)) {
+            if (checkBlocking(hostname) && !equalPreviousURL(tabId, hostname) && hostname != "google.com") {
                 // adding the tabId to the map of all current tabs
                 // (preventing blocking the same website serveral times in a row)
                 tabIdToPreviousHostname.set(tabId, hostname); 

@@ -18,7 +18,7 @@ chrome.runtime.onUpdateAvailable.addListener(() => {
     chrome.runtime.reload();
 });
 
-chrome.runtime.onStartup.addListener(async () => {
+chrome.runtime.onStartup.addListener(() => {
     getProgramDataFromMemory(dataSavingID);
 });
 

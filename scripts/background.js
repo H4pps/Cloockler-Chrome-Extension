@@ -103,11 +103,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }  
 });
 
+// delete the hostname from the list
 let deleteItem = (siteList, hostname) => {
     const index = findIndexOfUrl(siteList, hostname);
     siteList.splice(index, 1);
 }
 
+// find the index of the hosname in the list
 let findIndexOfUrl = (sitesList, hostname) => {
     for (let i = 0; i < sitesList.length; ++i) {
         if (hostname === sitesList[i]) {
@@ -126,9 +128,11 @@ let checkIncludes = (site, sitesList) => {
     sitesList.push(site);
 }
 
-let extractHostname = (url) => { // returns null if the URL is not in correct format
+// returns null if the URL is not in correct format
+let extractHostname = (url) => {
     try {
-        if (!url.startsWith("https://") && !url.startsWith('http://')) { // adding "https://" if the string does not start with that
+        // adding "https://" if the string does not start with that
+        if (!url.startsWith("https://") && !url.startsWith('http://')) {
             url = "https://" + url;
         }
         
@@ -152,7 +156,8 @@ let extractHostname = (url) => { // returns null if the URL is not in correct fo
 }
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => { // executes every time when the tab was updated/added
-    if (changeInfo.status === 'complete') { // loading of the tab was complete
+    // start when the tab was loaded
+    if (changeInfo.status === 'complete') {
         if (!tab.url.startsWith("chrome://")) { // #CHANGE with filtering later
             const hostname = extractHostname(tab.url);
 
@@ -160,10 +165,16 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => { // executes ever
                 const navigatingURL = tab.url;
                 chrome.tabs.update(tab.id, {url: "blockPage/blockPage.html"})
                 .then(() => {
-                    console.log("Blocking time: " + programData.blockingTime);
+                    // adding the tabId ot the map of all current tabs
+                    // (preventing blocking the same website serveral times in a row)
                     tabIdToPreviousHostname.set(tabId, hostname);  
                     
-                    setTimeout(() => chrome.tabs.update(tab.id, {url: navigatingURL}), programData.blockingTime * 100 + 50);
+                    setTimeout(() => {
+                        // checking if the tab was closed while timeout
+                        if (tabIdToPreviousHostname.has(tab.id)) {
+                            chrome.tabs.update(tab.id, {url: navigatingURL})
+                        }
+                    }, programData.blockingTime * 1000 + 200);
                 })
                 
             } 

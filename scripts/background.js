@@ -1,3 +1,4 @@
+console.log("BACKGROUND SCRIPT WAS LOADED");
 const dataSavingID = "dataSaving";
 let programData = {
     sites: {
@@ -11,7 +12,8 @@ let programData = {
 const maxBlockingTime = 60;
 const minBlockingTime = 5;
 
-const tabIdToPreviousHostname = new Map();
+// may cause reblocking the same website
+const tabIdToPreviousHostname = new Map(); 
 
 chrome.runtime.onUpdateAvailable.addListener(() => {
     console.log("updating extension to the newest version");
@@ -158,11 +160,14 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (!tab.url.startsWith("chrome://") && !tab.url.startsWith("chrome-extension://")) {
         if (changeInfo.status === 'complete') {
             const hostname = extractHostname(tab.url);
-
+            console.log("Previous: ", tabIdToPreviousHostname.get(tabId));
+            console.log("To: ", tab.url);
             if (checkBlocking(hostname) && !equalPreviousURL(tabId, hostname) && hostname != "google.com") {
                 // adding the tabId to the map of all current tabs
                 // (preventing blocking the same website serveral times in a row)
                 tabIdToPreviousHostname.set(tabId, hostname); 
+                console.log("Blocking");
+                console.log("Blocking time: ", programData.blockingTime);
 
                 const navigatingURL = tab.url;
                 chrome.tabs.update(tab.id, {url: "blockPage/blockPage.html"})

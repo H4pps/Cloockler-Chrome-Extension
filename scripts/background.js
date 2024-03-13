@@ -1,4 +1,4 @@
-console.log("BACKGROUND SCRIPT WAS LOADED");
+// console.log("BACKGROUND SCRIPT WAS LOADED");
 const dataSavingID = "dataSaving";
 let programData = {
     sites: {
@@ -32,7 +32,7 @@ let getProgramDataFromMemory = savingID => {
     chrome.storage.sync.get([savingID])
     .then(data => {
         if (data[savingID] === "undefined") {
-            console.log(`There is not data with ID ${savingID} in the memory`);
+            console.log(`There is no data with ID ${savingID} in the memory`);
             programData = {
                 sites: {
                     blocklist: [],
@@ -160,14 +160,14 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (!tab.url.startsWith("chrome://") && !tab.url.startsWith("chrome-extension://")) {
         if (changeInfo.status === 'complete') {
             const hostname = extractHostname(tab.url);
-            console.log("Previous: ", tabIdToPreviousHostname.get(tabId));
-            console.log("To: ", tab.url);
+            // console.log("Previous: ", tabIdToPreviousHostname.get(tabId));
+            // console.log("To: ", tab.url);
             if (checkBlocking(hostname) && !equalPreviousURL(tabId, hostname) && hostname != "google.com") {
                 // adding the tabId to the map of all current tabs
                 // (preventing blocking the same website serveral times in a row)
                 tabIdToPreviousHostname.set(tabId, hostname); 
-                console.log("Blocking");
-                console.log("Blocking time: ", programData.blockingTime);
+                // console.log("Blocking");
+                // console.log("Blocking time: ", programData.blockingTime);
 
                 const navigatingURL = tab.url;
                 chrome.tabs.update(tab.id, {url: "blockPage/blockPage.html"})

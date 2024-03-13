@@ -10,7 +10,7 @@ let programData = {
 }
 
 const maxBlockingTime = 60;
-const minBlockingTime = 5;
+const minBlockingTime = 10;
 
 // may cause reblocking the same website
 const tabIdToPreviousHostname = new Map(); 
@@ -42,7 +42,7 @@ let getProgramDataFromMemory = savingID => {
                 isBlocklistMode: true
             }
         } else {
-            programData = JSON.parse(data[savingID ]);
+            programData = JSON.parse(data[savingID]);
         }
     });
 }
@@ -178,7 +178,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
                             chrome.tabs.update(tab.id, {url: navigatingURL})
                         }
                     }, programData.blockingTime * 1000 + 200);
-                })
+                });
             } 
         }
     }
@@ -197,7 +197,5 @@ chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
 });
 
 function equalPreviousURL(tabId, hostname) {
-    //const previousURL = tabIdToPreviousHostname.get(tabId);
-
     return hostname === tabIdToPreviousHostname.get(tabId);
 }

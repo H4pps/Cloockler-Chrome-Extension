@@ -13,7 +13,6 @@ let programData = {
 const maxBlockingTime = 60;
 const minBlockingTime = 10;
 
-// may cause reblocking the same website
 let tabIdToPreviousHostname = new Map(); 
 
 let saveDataToMemory = (data, savingID) => {

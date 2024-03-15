@@ -1,5 +1,6 @@
-// console.log("BACKGROUND SCRIPT WAS LOADED");
+console.log("BACKGROUND SCRIPT WAS LOADED");
 const dataSavingID = "dataSaving";
+const previousTabMapSavingID = "prevTabMap";
 let programData = {
     sites: {
         blocklist: [],
@@ -13,25 +14,16 @@ const maxBlockingTime = 60;
 const minBlockingTime = 10;
 
 // may cause reblocking the same website
-const tabIdToPreviousHostname = new Map(); 
-
-chrome.runtime.onUpdateAvailable.addListener(() => {
-    console.log("updating extension to the newest version");
-    chrome.runtime.reload();
-});
-
-chrome.runtime.onStartup.addListener(() => {
-    getProgramDataFromMemory(dataSavingID);
-});
+let tabIdToPreviousHostname = new Map(); 
 
 let saveDataToMemory = (data, savingID) => {
     chrome.storage.sync.set({[savingID]: JSON.stringify(data)});
 }
 
-let getProgramDataFromMemory = savingID => {
+let getProgramData = savingID => {
     chrome.storage.sync.get([savingID])
     .then(data => {
-        if (data[savingID] === "undefined") {
+        if (typeof data[savingID] === "undefined") {
             console.log(`There is no data with ID ${savingID} in the memory`);
             programData = {
                 sites: {
@@ -47,7 +39,40 @@ let getProgramDataFromMemory = savingID => {
     });
 }
 
-getProgramDataFromMemory(dataSavingID);
+let saveTabIdMap = savingID => {
+    // making an array from map
+    const mapArray = Array.from(tabIdToPreviousHostname.entries());
+    chrome.storage.local.set({[savingID]: mapArray});
+}
+
+let getTabIdMap = savingID => {
+    chrome.storage.local.get([savingID])
+    .then(data => {
+        if (typeof data[savingID] === "undefined") {
+            console.log("There is no saved Map in the storage");
+            tabIdToPreviousHostname = new Map();
+        } else {
+            tabIdToPreviousHostname = new Map(data[savingID]);
+        }
+    });
+}
+
+// loading blocking data from the chrome storage
+getProgramData(dataSavingID);
+getTabIdMap(previousTabMapSavingID);
+
+chrome.runtime.onUpdateAvailable.addListener(() => {
+    console.log("updating extension to the newest version");
+    chrome.runtime.reload();
+});
+
+chrome.runtime.onStartup.addListener(() => {
+    getProgramData(dataSavingID);
+
+    // removing data from the previous session
+    chrome.storage.local.remove(previousTabMapSavingID);
+    getTabIdMap(previousTabMapSavingID);
+});
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.text === "get list mode") { // asking for the blocklist/allowlist mode
@@ -151,6 +176,7 @@ let extractHostname = (url) => {
 
         return hostname;
     } catch (error) {
+        console.log("Errorr in the url: ", message.url);
         throw new Error("URL is not in the correct format.");
     }
 }
@@ -160,14 +186,15 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (!tab.url.startsWith("chrome://") && !tab.url.startsWith("chrome-extension://")) {
         if (changeInfo.status === 'complete') {
             const hostname = extractHostname(tab.url);
-            // console.log("Previous: ", tabIdToPreviousHostname.get(tabId));
-            // console.log("To: ", tab.url);
+            console.log("Previous: ", tabIdToPreviousHostname.get(tabId));
+            console.log("To: ", tab.url);
             if (checkBlocking(hostname) && !equalPreviousURL(tabId, hostname) && hostname != "google.com") {
                 // adding the tabId to the map of all current tabs
                 // (preventing blocking the same website serveral times in a row)
                 tabIdToPreviousHostname.set(tabId, hostname); 
-                // console.log("Blocking");
-                // console.log("Blocking time: ", programData.blockingTime);
+                saveTabIdMap(previousTabMapSavingID);
+                console.log("Blocking");
+                console.log("Blocking time: ", programData.blockingTime);
 
                 const navigatingURL = tab.url;
                 chrome.tabs.update(tab.id, {url: "blockPage/blockPage.html"})
@@ -194,6 +221,7 @@ let checkBlocking = hostname => {
 
 chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
     tabIdToPreviousHostname.delete(tabId);
+    saveTabIdMap(previousTabMapSavingID);
 });
 
 function equalPreviousURL(tabId, hostname) {

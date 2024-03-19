@@ -100,7 +100,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             }
             sendResponse({type: "OK", hostname: hostname});
         } catch(error) {
-            sendResponse({type: "ERROR", message: error.message});
+            sendResponse({type: "ERROR", message: "URL is not in the correct format."});
         }
     } 
     else if (message.text === "delete from list") {
@@ -176,7 +176,7 @@ let extractHostname = (url) => {
         return hostname;
     } catch (error) {
         console.log("Errorr in the url: ", url);
-        throw new Error(`URL ${url} is not in the correct format.`);
+        throw new Error(`URL ${url} is not in the correct format.`); // change later
     }
 }
 

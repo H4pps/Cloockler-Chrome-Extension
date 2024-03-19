@@ -175,7 +175,7 @@ let extractHostname = (url) => {
 
         return hostname;
     } catch (error) {
-        console.log("Errorr in the url: ", message.url);
+        console.log("Errorr in the url: ", url);
         throw new Error("URL is not in the correct format.");
     }
 }

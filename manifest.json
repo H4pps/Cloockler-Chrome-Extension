@@ -4,7 +4,10 @@
     "version": "1.0.0",
     "description": "Blocks unnecessary distractions",
     "icons": {
-      "128": "/images/icon-128.png"
+      "128": "/images/clock-128.png",
+      "64": "/images/clock-64.png",
+      "48": "/images/clock-48.png",
+      "16": "/images/clock-16.png"
     },
     "action": {
         "default_popup": "popup/popup.html"

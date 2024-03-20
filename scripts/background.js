@@ -1,4 +1,4 @@
-console.log("BACKGROUND SCRIPT WAS LOADED");
+// console.log("BACKGROUND SCRIPT WAS LOADED");
 const dataSavingID = "dataSaving";
 const previousTabMapSavingID = "prevTabMap";
 let programData = {
@@ -176,6 +176,7 @@ let extractHostname = (url) => {
         return hostname;
     } catch (error) {
         console.log("Errorr in the url: ", url);
+        console.log(error);
         throw new Error(`URL ${url} is not in the correct format.`); // change later
     }
 }
@@ -185,15 +186,15 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (!tab.url.startsWith("chrome://") && !tab.url.startsWith("chrome-extension://")) {
         if (changeInfo.status === 'complete') {
             const hostname = extractHostname(tab.url);
-            console.log("Previous: ", tabIdToPreviousHostname.get(tabId));
-            console.log("To: ", tab.url);
+            // console.log("Previous: ", tabIdToPreviousHostname.get(tabId));
+            // console.log("To: ", tab.url);
             if (checkBlocking(hostname) && !equalPreviousURL(tabId, hostname) && hostname != "google.com") {
                 // adding the tabId to the map of all current tabs
                 // (preventing blocking the same website serveral times in a row)
                 tabIdToPreviousHostname.set(tabId, hostname); 
                 saveTabIdMap(previousTabMapSavingID);
-                console.log("Blocking");
-                console.log("Blocking time: ", programData.blockingTime);
+                // console.log("Blocking");
+                // console.log("Blocking time: ", programData.blockingTime);
 
                 const navigatingURL = tab.url;
                 chrome.tabs.update(tab.id, {url: "blockPage/blockPage.html"})

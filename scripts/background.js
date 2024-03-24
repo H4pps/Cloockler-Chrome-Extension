@@ -155,6 +155,10 @@ let checkIncludes = (site, sitesList) => {
 // returns null if the URL is not in correct format
 let extractHostname = (url) => {
     try {
+        if (url.startsWith("chrome-extension:")) {
+            throw new Error("Got chrome-extension:// url");
+        }
+
         // adding "https://" if the string does not start with that
         if (!url.startsWith("https://") && !url.startsWith('http://')) {
             url = "https://" + url;

@@ -1,3 +1,5 @@
+import { getBlockingTime, getList, getListMode } from "./popup-modules/popup-messages.js";  
+
 const inputField = document.querySelector("#url-input");
 const addButton = document.querySelector("#url-add-btn");
 
@@ -8,29 +10,20 @@ const decrementArrowButton = document.querySelector("#btn-decrement-arrow");
 
 const urlList = document.querySelector("#url-list"); // wrapper div for the list of URLs
 
-window.onload = () => {
-  chrome.runtime.sendMessage({text: "get blocking time"})
-  .then(response => {
-    secondsCounter.value = response.time;
-  });
+let currentMode = "BlockList";
+let urls = [];
 
-  chrome.runtime.sendMessage({text: "get list mode"})
-  .then(response => {
-    // console.log("Current mode is blocklist:", response.mode);
-    modeButton.textContent = response.mode ? "Blocklist" : "Allowlist";
-    return chrome.runtime.sendMessage({text: "get current list", mode: response.mode});
-  })
-  .then(response => {
-    // console.log("Returned response to 'get current list'", response);
-    // console.log("List returned to the popup.js:", response.list);
-    renderList(response.list);
-  });
+window.onload = async () => {
+  secondsCounter.value = await getBlockingTime();
+  currentMode = await getListMode();
+  modeButton.textContent = currentMode;
 
-  // copying the current tab url to the input field
-  chrome.tabs.query({active: true, currentWindow: true}).then(tabs => {
-    console.log(tabs[0].url);
+  urls = await getList(currentMode);
+  renderList(urls); 
+
+  chrome.tabs.query({active: true, currentWindow: true}, tabs => {
     inputField.value = tabs[0].url;
-  })
+  });
 }
 
 //console.log(sites)

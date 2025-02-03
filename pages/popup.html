@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link href="css/popup.css" rel="stylesheet">
+    <!-- <link rel="stylesheet" href="css/style.css"> -->
+  </head>
+  <body>
+    <div id="input-section">
+      <input type="text" placeholder="Enter URL of the website" id="url-in">
+      <button id="btn-add">＋</button>
+    </div>
+
+    <h4 id="error-p"></h4>
+
+    <div id="blocklist-section">
+      <div id="blocking-settings">
+        <button id="btn-mode"></button>
+        <div id="blocking-time-section">
+          <p id="blocking-text">Blocking for:</p>
+          <output id="seconds-counter"></output>
+          <div id="arrow-section">
+            <button id="btn-increment-arrow">▲</button>
+            <button id="btn-decrement-arrow">▼</button>
+          </div>
+        </div>
+      </div>
+        <!-- <h1 id="blocklist">Blocklist:</h1> -->
+      <div class="list-container" id="url-list"></div>
+    </div>
+
+    <script src="../scripts/popup.js"></script>
+  </body>
+</html>

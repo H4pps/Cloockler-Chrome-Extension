@@ -2,7 +2,22 @@ export class ListManager {
   constructor(urlList, domWrapper) {
     this._urlSet = new Set(urlList);
     this._domWrapper = domWrapper
+
+    this._domWrapper.addEventListener("click", event => {
+      if (event.target.classList.contains("delete-button")) {
+        this.deleteUrl(event.target.parentElement.dataset.url); // deletes the url from the set
+        this._domWrapper.removeChild(event.target.parentElement); // deletes the url from the document
+      }
+    });
   } 
+
+  /**
+   * 
+   * @param {*} url url to be deleted from the list
+   */
+  deleteUrl(url) {
+    this._urlSet.delete(url);
+  }
 
   /**
    *  renders @_urlSet to the dom

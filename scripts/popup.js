@@ -1,4 +1,5 @@
 import { getBlockingTime, getList, getListMode } from "./popup-modules/popup-messages.js";  
+import { ListManager } from "./popup-modules/ListManager.js";
 
 const inputField = document.querySelector("#url-input");
 const addButton = document.querySelector("#url-add-btn");
@@ -12,7 +13,7 @@ const urlList = document.querySelector("#url-list"); // wrapper div for the list
 
 let currentMode = "BlockList";
 let blockingTime = 15;
-let urls = [];
+let listManager;
 
 window.onload = async () => {
   blockingTime = await getBlockingTime();
@@ -21,8 +22,10 @@ window.onload = async () => {
   currentMode = await getListMode();
   modeButton.textContent = currentMode;
 
-  urls = await getList(currentMode);
-  renderList(urls); 
+  const urls = await getList(currentMode);
+  const urlWrapper = document.querySelector("#url-list"); 
+  listManager = new ListManager(urls, urlWrapper);
+  listManager.renderAll();
 
   chrome.tabs.query({active: true, currentWindow: true}, tabs => { // getting the current tab URL
     inputField.value = tabs[0].url;

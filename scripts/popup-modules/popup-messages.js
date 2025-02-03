@@ -1,10 +1,9 @@
-export const getBlockingTime = async () => {
+export const getBlockingTime = async () => { 
   try {
     const response = await chrome.runtime.sendMessage({
-      text: "get list mode",
+      text: "get blocking time",
     });
 
-    console.log("received blocking time:", response.time);
     return response.time;
   } catch (error) {
     console.error("Error getting blocking time:", error);
@@ -18,7 +17,6 @@ export const getListMode = async () => {
       text: "get list mode",
     });
 
-    console.log("received list mode:", response.mode);
     return response.mode ? "BlockList" : "AllowList";
   } catch (error) {
     console.error("Error getting list mode:", error);
@@ -33,7 +31,6 @@ export const getList = async (mode) => {
       mode: mode,
     });
 
-    console.log("received list:", response.list);
     return response.list;
   } catch (error) {
     console.error("Error getting list:", error);

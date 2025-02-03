@@ -11,17 +11,20 @@ const decrementArrowButton = document.querySelector("#btn-decrement-arrow");
 const urlList = document.querySelector("#url-list"); // wrapper div for the list of URLs
 
 let currentMode = "BlockList";
+let blockingTime = 15;
 let urls = [];
 
 window.onload = async () => {
-  secondsCounter.value = await getBlockingTime();
+  blockingTime = await getBlockingTime();
+  secondsCounter.value = blockingTime;
+
   currentMode = await getListMode();
   modeButton.textContent = currentMode;
 
   urls = await getList(currentMode);
   renderList(urls); 
 
-  chrome.tabs.query({active: true, currentWindow: true}, tabs => {
+  chrome.tabs.query({active: true, currentWindow: true}, tabs => { // getting the current tab URL
     inputField.value = tabs[0].url;
   });
 }

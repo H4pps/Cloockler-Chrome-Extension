@@ -32,27 +32,25 @@ window.onload = async () => {
   });
 }
 
-//console.log(sites)
-//renderList();
+const addUrl = async () => { // adding url to the list
+  const currentUrl = inputField.value;
+  const response = await listManager.addUrl(currentUrl);
 
-addButton.addEventListener("click", () => {
-  chrome.runtime.sendMessage({text: "set to list", url: inputField.value}, (response) => {
-    console.log("Popup response:", response);
-    if (response.type === "ERROR") {
-      document.getElementById("error-p").textContent = response.message;
-    }
-    else {
-      addElementToDisplay(response.hostname);
-      document.getElementById("error-p").textContent = "";
-      inputField.value = "";
-    }
-  });
-}); // site url input
+  const errorWrapper = document.querySelector("#error-p");
+  if (response.type === "ERROR") {
+    errorWrapper.textContent = response.message;
+  }
+  else {
+    errorWrapper.textContent = "";
+    inputField.value = "";
+  }
+}
 
+addButton.addEventListener("click", addUrl);
 inputField.addEventListener("keypress", event => {
   if (event.key === "Enter") {
     event.preventDefault();
-    inputEvent();
+    addUrl();
   }
 });
 

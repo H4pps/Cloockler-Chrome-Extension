@@ -37,3 +37,29 @@ export const getList = async (mode) => {
     throw error;
   }
 };
+
+export const deleteFromListMessage = async (url) => { 
+  try {
+    await chrome.runtime.sendMessage({
+      text: "delete from list",
+      url: url,
+    });
+  } catch (error) {
+    console.error("Error deleting from list:", error);
+    throw error;
+  } 
+}
+
+export const setToListMessage = async (url) => {
+  try {
+    const response = await chrome.runtime.sendMessage({
+      text: "set to list",
+      url: url,
+    });
+
+    return response;
+  } catch (error) {
+    console.error("Error setting to list:", error);
+    throw error;
+  }  
+}

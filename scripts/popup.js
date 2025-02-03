@@ -1,13 +1,13 @@
-import { getBlockingTime, getList, getListMode } from "./popup-modules/popup-messages.js";  
+import { getBlockingTime, getList, getListMode, setBlockingTimeMessage } from "./popup-modules/popup-messages.js";  
 import { ListManager } from "./popup-modules/ListManager.js";
 
 const inputField = document.querySelector("#url-input");
 const addButton = document.querySelector("#url-add-btn");
 
 const modeButton = document.querySelector("#mode-btn");
-const secondsCounter = document.querySelector("#seconds-counter");
-const incrementArrowButton = document.querySelector("#btn-increment-arrow");
-const decrementArrowButton = document.querySelector("#btn-decrement-arrow");
+const timeInput = document.querySelector("#time-inp");
+const addSecondButton = document.querySelector("#add-time-btn");
+const subtractSecondButton = document.querySelector("#subtract-time-btn");
 
 const urlList = document.querySelector("#url-list"); // wrapper div for the list of URLs
 
@@ -17,7 +17,7 @@ let listManager;
 
 window.onload = async () => {
   blockingTime = await getBlockingTime();
-  secondsCounter.value = blockingTime;
+  timeInput.value = blockingTime;
 
   currentMode = await getListMode();
   modeButton.textContent = currentMode;
@@ -45,7 +45,6 @@ const addUrl = async () => { // adding url to the list
     inputField.value = "";
   }
 }
-
 addButton.addEventListener("click", addUrl);
 inputField.addEventListener("keypress", event => {
   if (event.key === "Enter") {
@@ -54,19 +53,36 @@ inputField.addEventListener("keypress", event => {
   }
 });
 
-incrementArrowButton.addEventListener("click", event => {
-  chrome.runtime.sendMessage({text: "set blocking time", time: parseInt(secondsCounter.value) + 1})
-  .then(response => {
-    secondsCounter.value = response.time;
-  });
+const setTime = async (seconds) => {
+  const response = await setBlockingTimeMessage(seconds);
+
+  timeInput.value = response.time;
+  blockingTime = response.time;
+};
+addSecondButton.addEventListener("click", () => setTime(blockingTime + 1));
+subtractSecondButton.addEventListener("click", () => setTime(blockingTime - 1));
+timeInput.addEventListener("keypress", event => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    setTime(parseInt(timeInput.value));
+  }
 });
 
-decrementArrowButton.addEventListener("click", event => {
-  chrome.runtime.sendMessage({text: "set blocking time", time: parseInt(secondsCounter.value) - 1})
-  .then(response => {
-    secondsCounter.textContent = response.time;
-  });
-});
+// incrementArrowButton.addEventListener("click", () => {
+//   // chrome.runtime.sendMessage({text: "set blocking time", time: parseInt(timeInput.value) + 1})
+//   // .then(response => {
+//   //   timeInput.value = response.time;
+//   // });
+
+// });
+// subtractSecondButton.addEventListener("click", event => {
+
+// decrementArrowButton.addEventListener("click", event => {
+//   chrome.runtime.sendMessage({text: "set blocking time", time: parseInt(timeInput.value) - 1})
+//   .then(response => {
+//     timeInput.textContent = response.time;
+//   });
+// });
 
 modeButton.addEventListener("click", event => {
   chrome.runtime.sendMessage({text: "change list mode"})

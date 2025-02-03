@@ -1,32 +1,60 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
-    <link href="css/popup.css" rel="stylesheet">
-    <!-- <link rel="stylesheet" href="css/style.css"> -->
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="css/style.css" />
   </head>
-  <body>
-    <div id="input-section">
-      <input type="text" placeholder="Enter URL of the website" id="url-in">
-      <button id="btn-add">＋</button>
+  <body class="bg-[#FFFDFB]">
+    <div id="input-section" class="flex justify-center my-5 mx-[10px]">
+      <input
+        type="text"
+        placeholder="Enter URL of the website"
+        id="url-in"
+        class="bg-[#F0F0F0] transition-colors duration-75 w-[280px] py-2 px-3 border-0 rounded-[20px] text-[15px] hover:bg-[#E8E8E8]"
+      />
+      <button
+        id="btn-add"
+        class="bg-[#F0F0F0] transition-colors duration-75 ml-[10px] py-2 px-[11px] border-0 rounded-[20px] text-[15px] hover:bg-[#E8E8E8] active:bg-[#d8d8d8]"
+      >
+        ＋
+      </button>
     </div>
 
-    <h4 id="error-p"></h4>
+    <h4 id="error-p" class="text-red-500 my-[5px] mx-[10px]"></h4>
 
-    <div id="blocklist-section">
-      <div id="blocking-settings">
-        <button id="btn-mode"></button>
-        <div id="blocking-time-section">
-          <p id="blocking-text">Blocking for:</p>
-          <output id="seconds-counter"></output>
-          <div id="arrow-section">
-            <button id="btn-increment-arrow">▲</button>
-            <button id="btn-decrement-arrow">▼</button>
+    <div id="blocklist-section" class="my-5 mx-[10px]">
+      <div
+        id="blocking-settings"
+        class="flex justify-between items-center mt-5 mr-[10px] mb-[10px] ml-[10px]"
+      >
+        <button
+          id="btn-mode"
+          class="bg-[#F0F0F0] transition-colors duration-75 py-2 px-3 border-0 rounded-[30px] text-[22px] hover:bg-[#E8E8E8] active:bg-[#d8d8d8]"
+        ></button>
+        <div id="blocking-time-section" class="flex items-center">
+          <p id="blocking-text" class="text-[15px] mr-[10px]">Blocking for:</p>
+          <input
+            class="bg-[#F0F0F0] w-[50px] py-[10px] px-[12px] border-0 rounded-[20px] text-[18px] text-center"
+            type="number"
+            id="seconds-counter"
+          />
+          <div id="arrow-section" class="flex flex-col justify-center ml-[3px]">
+            <button
+              id="btn-increment-arrow"
+              class="bg-[#F0F0F0] transition-colors duration-75 py-[2px] px-[4px] border-0 rounded-[30px] text-[7px] hover:bg-[#E8E8E8] active:bg-[#d8d8d8]"
+            >
+              ▲
+            </button>
+            <button
+              id="btn-decrement-arrow"
+              class="bg-[#F0F0F0] transition-colors duration-75 py-[2px] px-[4px] border-0 rounded-[30px] text-[7px] hover:bg-[#E8E8E8] active:bg-[#d8d8d8]"
+            >
+              ▼
+            </button>
           </div>
         </div>
       </div>
-        <!-- <h1 id="blocklist">Blocklist:</h1> -->
-      <div class="list-container" id="url-list"></div>
+      <div id="url-list" class="h-[150px] overflow-y-auto"></div>
     </div>
 
     <script src="../scripts/popup.js"></script>

@@ -13,23 +13,7 @@ let blockingMode = "BlockList";
 let blockingTime = 15;
 let listManager;
 
-window.onload = async () => {
-  blockingTime = await getBlockingTime();
-  timeInput.value = blockingTime;
-
-  blockingMode = await getListMode();
-  modeButton.textContent = blockingMode;
-
-  const urls = await getList(blockingMode);
-  const urlWrapper = document.querySelector("#url-list"); 
-  listManager = new ListManager(urls, urlWrapper);
-  listManager.renderAll();
-
-  chrome.tabs.query({active: true, currentWindow: true}, tabs => { // getting the current tab URL
-    inputField.value = tabs[0].url;
-  });
-}
-
+// adding the url to the list
 const addUrl = async () => { // adding url to the list
   const currentUrl = inputField.value;
   const response = await listManager.addUrl(currentUrl);
@@ -51,6 +35,7 @@ inputField.addEventListener("keypress", event => {
   }
 });
 
+// setting the blocking time
 const setTime = async (seconds) => {
   const response = await setBlockingTimeMessage(seconds);
 
@@ -66,6 +51,7 @@ timeInput.addEventListener("keypress", event => {
   }
 });
 
+// changing the list mode
 modeButton.addEventListener("click", async () => {
   blockingMode = await changeListModeMessage();
   modeButton.textContent = blockingMode;
@@ -74,3 +60,21 @@ modeButton.addEventListener("click", async () => {
   listManager.setUrls(anotherUrls);
   listManager.renderAll();
 });
+
+// loading data from the background
+window.onload = async () => {
+  blockingTime = await getBlockingTime();
+  timeInput.value = blockingTime;
+
+  blockingMode = await getListMode();
+  modeButton.textContent = blockingMode;
+
+  const urls = await getList(blockingMode);
+  const urlWrapper = document.querySelector("#url-list"); 
+  listManager = new ListManager(urls, urlWrapper);
+  listManager.renderAll();
+
+  chrome.tabs.query({active: true, currentWindow: true}, tabs => { // getting the current tab URL
+    inputField.value = tabs[0].url;
+  });
+}

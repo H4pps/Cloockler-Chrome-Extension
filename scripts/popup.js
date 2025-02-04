@@ -35,7 +35,6 @@ inputField.addEventListener("keypress", event => {
   }
 });
 
-// TODO: add unhover saving
 // setting the blocking time
 const setTime = async (seconds) => {
   const response = await setBlockingTimeMessage(seconds);
@@ -45,6 +44,8 @@ const setTime = async (seconds) => {
 };
 addSecondButton.addEventListener("click", () => setTime(blockingTime + 1));
 subtractSecondButton.addEventListener("click", () => setTime(blockingTime - 1));
+
+timeInput.addEventListener("blur", () => setTime(parseInt(timeInput.value)));
 timeInput.addEventListener("keypress", event => {
   if (event.key === "Enter") {
     event.preventDefault();

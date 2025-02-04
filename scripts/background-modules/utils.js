@@ -8,16 +8,28 @@ export const loadBlockData = async () => {
       return {
         sites: {
           blocklist: [],
-          allowlist: []
+          allowlist: [],
         },
         blockingTime: 15,
-        isBlocklistMode: true
+        isBlocklistMode: true,
       };
     }
 
     return JSON.parse(loadedData[programDataKey]);
   } catch (error) {
-    console.error(`Error loading program data (key: ${programDataKey}):`, error);
+    console.error(
+      `Error loading program data (key: ${programDataKey}):`,
+      error
+    );
+    throw error;
+  }
+};
+
+export const saveToBlockData = async (data) => { // will be called only form background.js 
+  try {
+    chrome.storage.sync.set({programDataKey: JSON.stringify(data) });
+  } catch (error) {
+    console.error(`Error saving program data (key: ${programDataKey}):`, error);
     throw error;
   }
 };

@@ -1,4 +1,10 @@
-import { getBlockingTime, getList, getListMode, setBlockingTimeMessage, changeListModeMessage } from "./popup-modules/popup-messages.js";  
+import {
+  getBlockingTime,
+  getList,
+  getListMode,
+  setBlockingTimeMessage,
+  changeListModeMessage,
+} from "./popup-modules/popup-messages.js";
 import { ListManager } from "./popup-modules/ListManager.js";
 
 const inputField = document.querySelector("#url-input");
@@ -14,21 +20,21 @@ let blockingTime = 15;
 let listManager;
 
 // adding the url to the list
-const addUrl = async () => { // adding url to the list
+const addUrl = async () => {
+  // adding url to the list
   const currentUrl = inputField.value;
   const response = await listManager.addUrl(currentUrl);
 
   const errorWrapper = document.querySelector("#error-p");
   if (response.type === "ERROR") {
     errorWrapper.textContent = response.message;
-  }
-  else {
+  } else {
     errorWrapper.textContent = "";
     inputField.value = "";
   }
-}
+};
 addButton.addEventListener("click", addUrl);
-inputField.addEventListener("keypress", event => {
+inputField.addEventListener("keypress", (event) => {
   if (event.key === "Enter") {
     event.preventDefault();
     addUrl();
@@ -46,7 +52,7 @@ addSecondButton.addEventListener("click", () => setTime(blockingTime + 1));
 subtractSecondButton.addEventListener("click", () => setTime(blockingTime - 1));
 
 timeInput.addEventListener("blur", () => setTime(parseInt(timeInput.value)));
-timeInput.addEventListener("keypress", event => {
+timeInput.addEventListener("keypress", (event) => {
   if (event.key === "Enter") {
     event.preventDefault();
     setTime(parseInt(timeInput.value));
@@ -72,11 +78,12 @@ window.onload = async () => {
   modeButton.textContent = blockingMode;
 
   const urls = await getList(blockingMode);
-  const urlWrapper = document.querySelector("#url-list"); 
+  const urlWrapper = document.querySelector("#url-list");
   listManager = new ListManager(urls, urlWrapper);
   listManager.renderAll();
 
-  chrome.tabs.query({active: true, currentWindow: true}, tabs => { // getting the current tab URL
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    // getting the current tab URL
     inputField.value = tabs[0].url;
   });
-}
+};

@@ -46,7 +46,8 @@ export class MessageManager {
   }
 
   #getCurrentList() {
-    this.#response = { list: this.#dataManager.activeList }; 
+    const urlSet = this.#dataManager.activeList;
+    this.#response = { list: Array.from(urlSet) };
   }
 
   #setToList(url) {

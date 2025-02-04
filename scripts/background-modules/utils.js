@@ -25,7 +25,8 @@ export const loadBlockData = async () => {
 
 export const saveToBlockData = async (data) => { // will be called only form background.js 
   try {
-    chrome.storage.sync.set({BLOCK_KEY: JSON.stringify(data) });
+    console.log("SAVED DATA");
+    chrome.storage.sync.set({ [BLOCK_KEY]: JSON.stringify(data) });
   } catch (error) {
     console.error(`Error saving program data (key: ${BLOCK_KEY}):`, error);
     throw error;
@@ -67,7 +68,7 @@ export const extractHostname = (url) => {
       }
     });
     if (flag || !url.includes(".")) {
-      throw new Error("URL is not in the correct format.");
+      throw new Error();
     }
 
     const hostnameLastArray = new URL(url).hostname.split(".").splice(-2); // DRY!
@@ -77,6 +78,6 @@ export const extractHostname = (url) => {
   } catch (error) {
     console.log("Errorr in the url: ", url);
     console.log(error);
-    throw new Error(`URL ${url} is not in the correct format.`); // change later
+    throw new Error("URL is not in the correct format."); // change later
   }
 };

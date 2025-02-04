@@ -1,4 +1,4 @@
-import { saveToBlockData, extractHostname } from "./utils";
+import { saveToBlockData, extractHostname } from "./utils.js";
 
 const MAX_BLOCKING_TIME = 60;
 const MIN_BLOCKING_TIME = 10;
@@ -14,6 +14,8 @@ export class DataManager {
     this.#allowlist = new Set(data.allowlist);
     this.#blockingTime = data.blockingTime;
     this.#isBlocklistMode = data.isBlocklistMode;
+
+    this.#setActiveList();
   }
 
   get blockingMode() { // returns true if blocklist mode is active, otherwise false
@@ -56,6 +58,11 @@ export class DataManager {
 
   changeMode() {
     this.#isBlocklistMode = !this.#isBlocklistMode;
+    this.#setActiveList();
+  }
+
+  #setActiveList() {
+    this.#activeList = this.#isBlocklistMode ? this.#blocklist : this.#allowlist;
   }
 
   #saveData() {

@@ -28,7 +28,7 @@ export const getList = async (mode) => {
   try {
     const response = await chrome.runtime.sendMessage({
       text: "get current list",
-      mode: mode,
+      mode: mode === "BlockList",
     });
 
     return response.list;
@@ -66,17 +66,27 @@ export const setToListMessage = async (url) => {
 
 export const setBlockingTimeMessage = async (time) => {
   try {
-    console.log("sending seconds:", time);
     const response = await chrome.runtime.sendMessage({
       text: "set blocking time",
       time: time,
     });
 
-    console.log("response type:", response.type);
-    console.log("response time:", response.time);
     return response;
   } catch (error) {
     console.error("Error setting blocking time:", error);
     throw error;
   }
 };
+
+export const changeListModeMessage = async () => {
+  try {
+    const response = await chrome.runtime.sendMessage({
+      text: "change list mode",
+    });
+
+    return response.mode ? "BlockList" : "AllowList";
+  } catch (error) {
+    console.error("Error changing list mode:", error);
+    throw error;
+  }
+}

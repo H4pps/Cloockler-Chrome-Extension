@@ -1,4 +1,4 @@
-import { getBlockingTime, getList, getListMode, setBlockingTimeMessage } from "./popup-modules/popup-messages.js";  
+import { getBlockingTime, getList, getListMode, setBlockingTimeMessage, changeListModeMessage } from "./popup-modules/popup-messages.js";  
 import { ListManager } from "./popup-modules/ListManager.js";
 
 const inputField = document.querySelector("#url-input");
@@ -9,9 +9,7 @@ const timeInput = document.querySelector("#time-inp");
 const addSecondButton = document.querySelector("#add-time-btn");
 const subtractSecondButton = document.querySelector("#subtract-time-btn");
 
-const urlList = document.querySelector("#url-list"); // wrapper div for the list of URLs
-
-let currentMode = "BlockList";
+let blockingMode = "BlockList";
 let blockingTime = 15;
 let listManager;
 
@@ -19,10 +17,10 @@ window.onload = async () => {
   blockingTime = await getBlockingTime();
   timeInput.value = blockingTime;
 
-  currentMode = await getListMode();
-  modeButton.textContent = currentMode;
+  blockingMode = await getListMode();
+  modeButton.textContent = blockingMode;
 
-  const urls = await getList(currentMode);
+  const urls = await getList(blockingMode);
   const urlWrapper = document.querySelector("#url-list"); 
   listManager = new ListManager(urls, urlWrapper);
   listManager.renderAll();
@@ -68,66 +66,11 @@ timeInput.addEventListener("keypress", event => {
   }
 });
 
-// incrementArrowButton.addEventListener("click", () => {
-//   // chrome.runtime.sendMessage({text: "set blocking time", time: parseInt(timeInput.value) + 1})
-//   // .then(response => {
-//   //   timeInput.value = response.time;
-//   // });
+modeButton.addEventListener("click", async () => {
+  blockingMode = await changeListModeMessage();
+  modeButton.textContent = blockingMode;
 
-// });
-// subtractSecondButton.addEventListener("click", event => {
-
-// decrementArrowButton.addEventListener("click", event => {
-//   chrome.runtime.sendMessage({text: "set blocking time", time: parseInt(timeInput.value) - 1})
-//   .then(response => {
-//     timeInput.textContent = response.time;
-//   });
-// });
-
-modeButton.addEventListener("click", event => {
-  chrome.runtime.sendMessage({text: "change list mode"})
-  .then(response => {
-    modeButton.textContent = response.mode ? "Blocklist" : "Allowlist";
-    return chrome.runtime.sendMessage({text: "get current list", mode: response.mode});
-  })
-  .then(response => {
-    renderList(response.list);
-  })
+  const anotherUrls = await getList(blockingMode);
+  listManager.setUrls(anotherUrls);
+  listManager.renderAll();
 });
-
-
-let renderList = siteList => {
-  urlList.innerHTML = "";
-  for (let i = 0; i < siteList.length; ++i) {
-    addElementToDisplay(siteList[i]);
-  }
-};
-
-let addElementToDisplay = URL => { // adding an HTML object representing the new element (with given URL)
-  const newItem = document.createElement("div"); // the wrap for the URL and delete button
-  const ID = Math.random(); // setting a random id to the HTML object
-  newItem.id = "item-" + ID;
-  newItem.className = 'list-item';
-
-  const itemUrl = document.createElement("span"); // displaying URL
-  itemUrl.className = "url-span";
-  itemUrl.textContent = URL;
-  const deleteButton = document.createElement("button"); // delete button
-  deleteButton.className = "delete-button";
-  deleteButton.textContent = "✕"
-  deleteButton.onclick = () => { // setting the delete function
-    chrome.runtime.sendMessage({text: "delete from list", url: itemUrl.textContent});
-    deleteDisplayItem(ID);
-  }
-
-  newItem.appendChild(itemUrl);
-  newItem.appendChild(deleteButton);
-
-  urlList.appendChild(newItem);
-};
-
-let deleteDisplayItem = ID => { // deleting ab HTML object representing deleted element
-  let listContainer = document.getElementById("url-list");
-  var itemToDelete = document.getElementById('item-' + ID);
-  listContainer.removeChild(itemToDelete);
-};

@@ -86,6 +86,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     let response = {list: []};
     response.list = message.mode? programData.sites.blocklist : programData.sites.allowlist;
 
+    console.log("Background script:", programData);
     sendResponse(response);
   }
   else if (message.text === "set to list") { // adding site to blocklist/allowlist

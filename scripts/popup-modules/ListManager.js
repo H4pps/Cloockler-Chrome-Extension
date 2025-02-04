@@ -15,6 +15,13 @@ export class ListManager {
   } 
 
   /**
+   * @param {*} urls list of urls to be passed to the list
+   */
+  setUrls(urls) {
+    this._urlSet = new Set(urls);
+  }
+
+  /**
    * 
    * @param {*} url url to be added to the list
    * @returns a promise that resolves to the response from the background
@@ -38,7 +45,7 @@ export class ListManager {
   }
 
   /**
-   *  renders @_urlSet to the dom
+   *  renders @param _urlSet to the dom
    */
   renderAll() {
     this._domWrapper.innerHTML = "";

@@ -1,5 +1,4 @@
 const programDataKey = "dataSaving";
-const tabMapKey = "prevTabMap";
 
 export const loadBlockData = async () => {
   try {
@@ -23,17 +22,18 @@ export const loadBlockData = async () => {
   }
 };
 
-export const loadTabMap = async () => {
+export const scanTabMap = async () => {
   try {
-    const loadedData = await chrome.storage.local.get(tabMapKey);
-    if (typeof loadedData[tabMapKey] === "undefined") {
-      console.log("There is no tab map in the storage");
-      return new Map();
+    const scannedTabs = await chrome.tabs.query({});
+
+    const tabMap = new Map();
+    for (const tab of scannedTabs) {
+      tabMap.set(tab.id, tab.url);
     }
 
-    return new Map(loadedData[tabMapKey]);
+    return tabMap;
   } catch (error) {
-    console.error(`Error loading tab map (key: ${tabMapKey}):`, error);
+    console.log("Error scanning tab map:", error);
     throw error;
   }
 };

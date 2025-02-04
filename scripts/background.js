@@ -1,4 +1,4 @@
-import {loadBlockData} from "./background-modules/utils.js";
+import { loadBlockData, scanTabMap } from "./background-modules/utils.js";
 
 const dataSavingID = "dataSaving";
 const previousTabMapSavingID = "prevTabMap";
@@ -12,6 +12,9 @@ let tabIdToPreviousHostname = new Map();
 const backgorundStartupLoad = async () => {
   programData = await loadBlockData();
   console.log("Loaded from backgorund module:", programData);
+
+  tabIdToPreviousHostname = await scanTabMap();
+  console.log("Loaded from backgorund module:", tabIdToPreviousHostname);
 }
 backgorundStartupLoad();
 
@@ -25,33 +28,9 @@ let saveTabIdMap = savingID => {
   chrome.storage.local.set({[savingID]: mapArray});
 }
 
-let getTabIdMap = savingID => {
-  chrome.storage.local.get([savingID])
-  .then(data => {
-    if (typeof data[savingID] === "undefined") {
-      console.log("There is no saved Map in the storage");
-      tabIdToPreviousHostname = new Map();
-    } else {
-      tabIdToPreviousHostname = new Map(data[savingID]);
-    }
-  });
-}
-
-// loading blocking data from the chrome storage
-// getProgramData(dataSavingID);
-getTabIdMap(previousTabMapSavingID);
-
 chrome.runtime.onUpdateAvailable.addListener(() => {
   console.log("updating extension to the newest version");
   chrome.runtime.reload();
-});
-
-chrome.runtime.onStartup.addListener(() => {
-  // getProgramData(dataSavingID);
-
-  // removing data from the previous session
-  chrome.storage.local.remove(previousTabMapSavingID);
-  getTabIdMap(previousTabMapSavingID);
 });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -177,12 +156,11 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         // adding the tabId to the map of all current tabs
         // (preventing blocking the same website serveral times in a row)
         tabIdToPreviousHostname.set(tabId, hostname); 
-        saveTabIdMap(previousTabMapSavingID);
         console.log("Blocking");
         console.log("Blocking time: ", programData.blockingTime);
 
         const navigatingURL = tab.url;
-        chrome.tabs.update(tab.id, {url: "blockPage/blockPage.html"})
+        chrome.tabs.update(tab.id, {url: "pages/blockPage.html"})
         .then(() => {  
           setTimeout(() => {
             // checking if the tab was closed while timeout
@@ -204,9 +182,8 @@ let checkBlocking = hostname => {
   return !programData.sites.allowlist.includes(hostname);
 }
 
-chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
+chrome.tabs.onRemoved.addListener(tabId => {
   tabIdToPreviousHostname.delete(tabId);
-  saveTabIdMap(previousTabMapSavingID);
 });
 
 function equalPreviousURL(tabId, hostname) {

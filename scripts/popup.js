@@ -35,6 +35,7 @@ inputField.addEventListener("keypress", event => {
   }
 });
 
+// TODO: add unhover saving
 // setting the blocking time
 const setTime = async (seconds) => {
   const response = await setBlockingTimeMessage(seconds);

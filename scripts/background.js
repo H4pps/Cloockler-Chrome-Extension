@@ -34,8 +34,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // sending the list with the given mode
     let response = { list: [] };
     response.list = message.mode
-      ? blockingData.sites.blocklist
-      : blockingData.sites.allowlist;
+      ? blockingData.blocklist
+      : blockingData.allowlist;
 
     sendResponse(response);
   } else if (message.text === "set to list") {
@@ -43,10 +43,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     try {
       const hostname = extractHostname(message.url);
       if (blockingData.isBlocklistMode) {
-        checkIncludes(hostname, blockingData.sites.blocklist);
+        checkIncludes(hostname, blockingData.blocklist);
         saveToBlockData(blockingData);
       } else {
-        checkIncludes(hostname, blockingData.sites.allowlist);
+        checkIncludes(hostname, blockingData.allowlist);
         saveToBlockData(blockingData);
       }
       sendResponse({ type: "OK", hostname: hostname });
@@ -58,10 +58,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
   } else if (message.text === "delete from list") {
     if (blockingData.isBlocklistMode) {
-      deleteItem(blockingData.sites.blocklist, message.url);
+      deleteItem(blockingData.blocklist, message.url);
       saveToBlockData(blockingData);
     } else {
-      deleteItem(blockingData.sites.allowlist, message.url);
+      deleteItem(blockingData.allowlist, message.url);
       saveToBlockData(blockingData);
     }
   } else if (message.text === "get blocking time") {
@@ -172,10 +172,10 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
 let checkBlocking = (hostname) => {
   if (blockingData.isBlocklistMode) {
-    return blockingData.sites.blocklist.includes(hostname);
+    return blockingData.blocklist.includes(hostname);
   }
 
-  return !blockingData.sites.allowlist.includes(hostname);
+  return !blockingData.allowlist.includes(hostname);
 };
 
 chrome.tabs.onRemoved.addListener((tabId) => {

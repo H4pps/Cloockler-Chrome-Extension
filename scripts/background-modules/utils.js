@@ -6,10 +6,8 @@ export const loadBlockData = async () => {
     if (typeof loadedData[programDataKey] === "undefined") {
       console.log("There is no block data in the storage");
       return {
-        sites: {
-          blocklist: [],
-          allowlist: [],
-        },
+        blocklist: [],
+        allowlist: [],
         blockingTime: 15,
         isBlocklistMode: true,
       };

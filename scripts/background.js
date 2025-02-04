@@ -1,41 +1,22 @@
-console.log("BACKGROUND SCRIPT WAS LOADED");
+import {loadBlockData} from "./background-modules/utils.js";
+
 const dataSavingID = "dataSaving";
 const previousTabMapSavingID = "prevTabMap";
-let programData = {
-  sites: {
-    blocklist: [],
-    allowlist: []
-  },
-  blockingTime: 15,
-  isBlocklistMode: true
-}
+let programData;
 
 const maxBlockingTime = 60;
 const minBlockingTime = 10;
 
 let tabIdToPreviousHostname = new Map(); 
 
+const backgorundStartupLoad = async () => {
+  programData = await loadBlockData();
+  console.log("Loaded from backgorund module:", programData);
+}
+backgorundStartupLoad();
+
 let saveDataToMemory = (data, savingID) => {
   chrome.storage.sync.set({[savingID]: JSON.stringify(data)});
-}
-
-let getProgramData = savingID => {
-  chrome.storage.sync.get([savingID])
-  .then(data => {
-    if (typeof data[savingID] === "undefined") {
-      console.log(`There is no data with ID ${savingID} in the memory`);
-      programData = {
-        sites: {
-          blocklist: [],
-          allowlist: []
-        },
-        blockingTime: 15,
-        isBlocklistMode: true
-      }
-    } else {
-        programData = JSON.parse(data[savingID]);
-    }
-  });
 }
 
 let saveTabIdMap = savingID => {
@@ -57,7 +38,7 @@ let getTabIdMap = savingID => {
 }
 
 // loading blocking data from the chrome storage
-getProgramData(dataSavingID);
+// getProgramData(dataSavingID);
 getTabIdMap(previousTabMapSavingID);
 
 chrome.runtime.onUpdateAvailable.addListener(() => {
@@ -66,7 +47,7 @@ chrome.runtime.onUpdateAvailable.addListener(() => {
 });
 
 chrome.runtime.onStartup.addListener(() => {
-  getProgramData(dataSavingID);
+  // getProgramData(dataSavingID);
 
   // removing data from the previous session
   chrome.storage.local.remove(previousTabMapSavingID);
@@ -86,7 +67,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     let response = {list: []};
     response.list = message.mode? programData.sites.blocklist : programData.sites.allowlist;
 
-    console.log("Background script:", programData);
     sendResponse(response);
   }
   else if (message.text === "set to list") { // adding site to blocklist/allowlist
@@ -152,8 +132,6 @@ let checkIncludes = (site, sitesList) => {
 
   sitesList.push(site);
 }
-
-
 
 // returns null if the URL is not in correct format
 let extractHostname = (url) => {

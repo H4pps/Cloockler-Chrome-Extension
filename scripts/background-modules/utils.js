@@ -47,3 +47,36 @@ export const scanTabMap = async () => {
     throw error;
   }
 };
+
+// returns null if the URL is not in correct format
+export const extractHostname = (url) => {
+  try {
+    if (url.startsWith("chrome-extension:")) {
+      throw new Error("Got chrome-extension:// url");
+    }
+
+    // adding "https://" if the string does not start with that
+    if (!url.startsWith("https://") && !url.startsWith("http://")) {
+      url = "https://" + url;
+    }
+
+    let flag = false;
+    url.split(".").forEach(function (number) {
+      if (number.length === 0) {
+        flag = true;
+      }
+    });
+    if (flag || !url.includes(".")) {
+      throw new Error("URL is not in the correct format.");
+    }
+
+    const hostnameLastArray = new URL(url).hostname.split(".").splice(-2); // DRY!
+    const hostname = hostnameLastArray[0] + "." + hostnameLastArray[1];
+
+    return hostname;
+  } catch (error) {
+    console.log("Errorr in the url: ", url);
+    console.log(error);
+    throw new Error(`URL ${url} is not in the correct format.`); // change later
+  }
+};

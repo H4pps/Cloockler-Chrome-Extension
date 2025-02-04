@@ -32,8 +32,8 @@ export class ListManager {
   async addUrl(url) {
     const response = await setToListMessage(url);
     if (response.type === "OK") {
-      this.#urlSet.add(url);
-      this.renderElement(url);
+      this.#urlSet.add(response.hostname);
+      this.renderElement(response.hostname);
     }
 
     return response;

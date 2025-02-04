@@ -1,4 +1,4 @@
-import { saveToBlockData } from "./utils";
+import { saveToBlockData, extractHostname } from "./utils";
 
 const MAX_BLOCKING_TIME = 60;
 const MIN_BLOCKING_TIME = 10;
@@ -10,8 +10,8 @@ export class DataManager {
   #isBlocklistMode;
 
   constructor(data) {
-    this.#blocklist = new Set(data.sites.blocklist);
-    this.#allowlist = new Set(data.sites.allowlist);
+    this.#blocklist = new Set(data.blocklist);
+    this.#allowlist = new Set(data.allowlist);
     this.#blockingTime = data.blockingTime;
     this.#isBlocklistMode = data.isBlocklistMode;
   }
@@ -24,22 +24,33 @@ export class DataManager {
     return this.#blockingTime;
   }
   set blockingTime(time) {
-    if (time >= MIN_BLOCKING_TIME && time <= MAX_BLOCKING_TIME) {
-      this.#blockingTime = time;
+    if (time <= MIN_BLOCKING_TIME || time >= MAX_BLOCKING_TIME) {
+      throw new Error("Time is out of range");
     }
+
+    this.#blockingTime = time;
   }
 
   get activeList() {
     return this.#activeList;
   }
 
+  // returns added hostname
   addUrl(url) {
-    this.#activeList.add(url);
+    const hostname = extractHostname(url);
+
+    if (this.#activeList.has(hostname)) {
+      throw new Error("URL hostname is already in the list");
+    }
+
+    this.#activeList.add(hostname);
     this.#saveData();
+
+    return hostname;
   }
 
-  deleteUrl(url) {
-    this.#activeList.delete(url);
+  deleteHostname(hostname) {
+    this.#activeList.delete(hostname);
     this.#saveData();
   }
 

@@ -1,20 +1,36 @@
-import { loadBlockData, scanTabMap, saveToBlockData } from "./background-modules/utils.js";
+// Problems:
+// 1) does not persist blocking data
+// 2) blocking data is undefined if the background script is woken up
 
-let blockingData;
+import {
+  loadBlockData,
+  scanTabMap,
+} from "./background-modules/utils.js";
+import { DataManager } from "./background-modules/DataManager.js";
+import { MessageManager } from "./background-modules/MessageManager.js";
 
-const maxBlockingTime = 60;
-const minBlockingTime = 10;
-
-let tabIdToPreviousHostname = new Map();
+let blockingData = undefined;
+let dataManager = undefined;
+let messageManager = undefined;
+let tabIdToPreviousHostname = undefined;
 
 const init = async () => {
   blockingData = await loadBlockData();
   console.log("Loaded block data:", blockingData);
 
+  dataManager = new DataManager(blockingData);
+  messageManager = new MessageManager(dataManager);
+
   tabIdToPreviousHostname = await scanTabMap();
   console.log("Scanned tabs:", tabIdToPreviousHostname);
 };
 init();
+// const initIfUndefined = async () => {
+//   if (blockingData === undefined) {
+//     await init();
+//   }
+// }
+// initIfUndefined();
 
 chrome.runtime.onUpdateAvailable.addListener(() => {
   console.log("updating extension to the newest version");
@@ -22,118 +38,8 @@ chrome.runtime.onUpdateAvailable.addListener(() => {
 });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.text === "get list mode") {
-    // asking for the blocklist/allowlist mode
-    sendResponse({ mode: blockingData.isBlocklistMode });
-  } else if (message.text === "change list mode") {
-    // setting the blocklist/allowlist mode
-    blockingData.isBlocklistMode = !blockingData.isBlocklistMode;
-    saveToBlockData(blockingData);
-    sendResponse({ mode: blockingData.isBlocklistMode });
-  } else if (message.text === "get current list") {
-    // sending the list with the given mode
-    let response = { list: [] };
-    response.list = message.mode
-      ? blockingData.blocklist
-      : blockingData.allowlist;
-
-    sendResponse(response);
-  } else if (message.text === "set to list") {
-    // adding site to blocklist/allowlist
-    try {
-      const hostname = extractHostname(message.url);
-      if (blockingData.isBlocklistMode) {
-        checkIncludes(hostname, blockingData.blocklist);
-        saveToBlockData(blockingData);
-      } else {
-        checkIncludes(hostname, blockingData.allowlist);
-        saveToBlockData(blockingData);
-      }
-      sendResponse({ type: "OK", hostname: hostname });
-    } catch (error) {
-      sendResponse({
-        type: "ERROR",
-        message: "URL is not in the correct format.",
-      });
-    }
-  } else if (message.text === "delete from list") {
-    if (blockingData.isBlocklistMode) {
-      deleteItem(blockingData.blocklist, message.url);
-      saveToBlockData(blockingData);
-    } else {
-      deleteItem(blockingData.allowlist, message.url);
-      saveToBlockData(blockingData);
-    }
-  } else if (message.text === "get blocking time") {
-    sendResponse({ time: blockingData.blockingTime });
-  } else if (message.text === "set blocking time") {
-    if (message.time >= minBlockingTime && message.time <= maxBlockingTime) {
-      blockingData.blockingTime = message.time;
-      saveToBlockData(blockingData);
-      sendResponse({ type: "OK", time: blockingData.blockingTime });
-    } else {
-      sendResponse({ type: "ERROR", time: blockingData.blockingTime });
-    }
-  }
+  messageManager.getMessage(message, sendResponse);
 });
-
-// delete the hostname from the list
-let deleteItem = (siteList, hostname) => {
-  const index = findIndexOfUrl(siteList, hostname);
-  siteList.splice(index, 1);
-};
-
-// find the index of the hosname in the list
-let findIndexOfUrl = (sitesList, hostname) => {
-  for (let i = 0; i < sitesList.length; ++i) {
-    if (hostname === sitesList[i]) {
-      return i;
-    }
-  }
-
-  return null;
-};
-
-let checkIncludes = (site, sitesList) => {
-  if (sitesList.includes(site)) {
-    throw new Error("URL hostname is already in the list");
-  }
-
-  sitesList.push(site);
-};
-
-// returns null if the URL is not in correct format
-let extractHostname = (url) => {
-  try {
-    if (url.startsWith("chrome-extension:")) {
-      throw new Error("Got chrome-extension:// url");
-    }
-
-    // adding "https://" if the string does not start with that
-    if (!url.startsWith("https://") && !url.startsWith("http://")) {
-      url = "https://" + url;
-    }
-
-    let flag = false;
-    url.split(".").forEach(function (number) {
-      if (number.length === 0) {
-        flag = true;
-      }
-    });
-    if (flag || !url.includes(".")) {
-      throw new Error("URL is not in the correct format.");
-    }
-
-    const hostnameLastArray = new URL(url).hostname.split(".").splice(-2); // DRY!
-    const hostname = hostnameLastArray[0] + "." + hostnameLastArray[1];
-
-    return hostname;
-  } catch (error) {
-    console.log("Errorr in the url: ", url);
-    console.log(error);
-    throw new Error(`URL ${url} is not in the correct format.`); // change later
-  }
-};
 
 // executes every time when the tab was updated/added
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {

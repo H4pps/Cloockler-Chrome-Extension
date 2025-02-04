@@ -4,9 +4,24 @@ export const getBlockingTime = async () => {
       text: "get blocking time",
     });
 
+    console.log(response);
     return response.time;
   } catch (error) {
     console.error("Error getting blocking time:", error);
+    throw error;
+  }
+};
+
+export const setBlockingTimeMessage = async (time) => {
+  try {
+    const response = await chrome.runtime.sendMessage({
+      text: "set blocking time",
+      time: time,
+    });
+
+    return response;
+  } catch (error) {
+    console.error("Error setting blocking time:", error);
     throw error;
   }
 };
@@ -62,20 +77,6 @@ export const setToListMessage = async (url) => {
     console.error("Error setting to list:", error);
     throw error;
   }  
-};
-
-export const setBlockingTimeMessage = async (time) => {
-  try {
-    const response = await chrome.runtime.sendMessage({
-      text: "set blocking time",
-      time: time,
-    });
-
-    return response;
-  } catch (error) {
-    console.error("Error setting blocking time:", error);
-    throw error;
-  }
 };
 
 export const changeListModeMessage = async () => {

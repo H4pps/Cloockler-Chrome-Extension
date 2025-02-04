@@ -21,7 +21,6 @@ let listManager;
 
 // adding the url to the list
 const addUrl = async () => {
-  // adding url to the list
   const currentUrl = inputField.value;
   const response = await listManager.addUrl(currentUrl);
 

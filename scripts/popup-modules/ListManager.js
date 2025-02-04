@@ -1,15 +1,18 @@
 import { deleteFromListMessage, setToListMessage } from "./popup-messages.js";
 export class ListManager {
-  constructor(urlList, domWrapper) {
-    this._urlSet = new Set(urlList);
-    this._domWrapper = domWrapper
+  #urlSet;
+  #domWrapper;
 
-    this._domWrapper.addEventListener("click", event => {
+  constructor(urlList, domWrapper) {
+    this.#urlSet = new Set(urlList);
+    this.#domWrapper = domWrapper
+
+    this.#domWrapper.addEventListener("click", event => {
       if (event.target.classList.contains("delete-button")) {
         const url = event.target.parentElement.dataset.url;
         this.deleteUrl(url); // deletes the url from the set
         deleteFromListMessage(url); // deletes the url from the background  
-        this._domWrapper.removeChild(event.target.parentElement); // deletes the url from the document
+        this.#domWrapper.removeChild(event.target.parentElement); // deletes the url from the document
       }
     });
   } 
@@ -18,7 +21,7 @@ export class ListManager {
    * @param {*} urls list of urls to be passed to the list
    */
   setUrls(urls) {
-    this._urlSet = new Set(urls);
+    this.#urlSet = new Set(urls);
   }
 
   /**
@@ -29,7 +32,7 @@ export class ListManager {
   async addUrl(url) {
     const response = await setToListMessage(url);
     if (response.type === "OK") {
-      this._urlSet.add(url);
+      this.#urlSet.add(url);
       this.renderElement(url);
     }
 
@@ -41,16 +44,16 @@ export class ListManager {
    * @param {*} url url to be deleted from the list
    */
   deleteUrl(url) {
-    this._urlSet.delete(url);
+    this.#urlSet.delete(url);
   }
 
   /**
-   *  renders @param _urlSet to the dom
+   *  renders @param #urlSet to the dom
    */
   renderAll() {
-    this._domWrapper.innerHTML = "";
-    for (let url of this._urlSet) {
-      this._domWrapper.innerHTML += this.urlElementDomString(url);
+    this.#domWrapper.innerHTML = "";
+    for (let url of this.#urlSet) {
+      this.#domWrapper.innerHTML += this.urlElementDomString(url);
     }
   }
 
@@ -59,8 +62,8 @@ export class ListManager {
    * @param {*} url single url to be added to the head of the list
    */
   renderElement(url) {
-    this._domWrapper.innerHTML = 
-      this.urlElementDomString(url) + this._domWrapper.innerHTML;  
+    this.#domWrapper.innerHTML = 
+      this.urlElementDomString(url) + this.#domWrapper.innerHTML;  
   }
 
   /**

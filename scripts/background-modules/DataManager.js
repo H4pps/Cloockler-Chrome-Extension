@@ -1,11 +1,19 @@
+const MAX_BLOCKING_TIME = 60;
+const MIN_BLOCKING_TIME = 10;
 export class DataManager {
-  static MAX_BLOCKING_TIME = 60;
-  static MIN_BLOCKING_TIME = 10;
+  #activeList;
+  #blocklist;
+  #allowlist;
+  #blockingTime;
+  #isBlocklistMode;
 
   constructor(data) {
-    this.blocklist = data.sites.blocklist;
-    this.allowlist = data.sites.allowlist;
-    this.blockingTime = data.blockingTime;
-    this.isBlocklistMode = data.isBlocklistMode;
+    this.#blocklist = data.sites.blocklist;
+    this.#allowlist = data.sites.allowlist;
+    this.#blockingTime = data.blockingTime;
+    this.#isBlocklistMode = data.isBlocklistMode;
   }
+
+  setActiveList
+
 }

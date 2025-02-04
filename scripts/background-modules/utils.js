@@ -1,9 +1,9 @@
-const programDataKey = "dataSaving";
+const BLOCK_KEY = "dataSaving";
 
 export const loadBlockData = async () => {
   try {
-    const loadedData = await chrome.storage.sync.get(programDataKey);
-    if (typeof loadedData[programDataKey] === "undefined") {
+    const loadedData = await chrome.storage.sync.get(BLOCK_KEY);
+    if (typeof loadedData[BLOCK_KEY] === "undefined") {
       console.log("There is no block data in the storage");
       return {
         blocklist: [],
@@ -13,10 +13,10 @@ export const loadBlockData = async () => {
       };
     }
 
-    return JSON.parse(loadedData[programDataKey]);
+    return JSON.parse(loadedData[BLOCK_KEY]);
   } catch (error) {
     console.error(
-      `Error loading program data (key: ${programDataKey}):`,
+      `Error loading program data (key: ${BLOCK_KEY}):`,
       error
     );
     throw error;
@@ -25,9 +25,9 @@ export const loadBlockData = async () => {
 
 export const saveToBlockData = async (data) => { // will be called only form background.js 
   try {
-    chrome.storage.sync.set({programDataKey: JSON.stringify(data) });
+    chrome.storage.sync.set({BLOCK_KEY: JSON.stringify(data) });
   } catch (error) {
-    console.error(`Error saving program data (key: ${programDataKey}):`, error);
+    console.error(`Error saving program data (key: ${BLOCK_KEY}):`, error);
     throw error;
   }
 };

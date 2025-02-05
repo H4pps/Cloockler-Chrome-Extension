@@ -554,6 +554,10 @@ video {
   display: none;
 }
 
+.m-0 {
+  margin: 0px;
+}
+
 .mx-\[10px\] {
   margin-left: 10px;
   margin-right: 10px;
@@ -587,6 +591,22 @@ video {
 
 .mt-5 {
   margin-top: 1.25rem;
+}
+
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
+.mt-\[2\] {
+  margin-top: 2;
+}
+
+.mt-\[2h\] {
+  margin-top: 2h;
+}
+
+.mt-\[2vh\] {
+  margin-top: 2vh;
 }
 
 .block {
@@ -714,9 +734,34 @@ video {
   font-size: 7px;
 }
 
+.text-\[calc\(\)\] {
+  font-size: calc();
+}
+
+.text-\[calc\(1\.7\)\] {
+  font-size: calc(1.7);
+}
+
+.text-\[calc\(1\.7vw\+1\.\)\] {
+  font-size: calc(1.7vw + 1.);
+}
+
+.text-\[calc\(1\.7vw\+1\.7v\)\] {
+  font-size: calc(1.7vw + 1.7v);
+}
+
+.text-\[calc\(1\.7vw\+1\.7vh\)\] {
+  font-size: calc(1.7vw + 1.7vh);
+}
+
 .text-red-500 {
   --tw-text-opacity: 1;
   color: rgb(239 68 68 / var(--tw-text-opacity, 1));
+}
+
+.text-white {
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1));
 }
 
 .blur {

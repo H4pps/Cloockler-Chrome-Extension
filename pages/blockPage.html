@@ -2,13 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <link href="css/blockPage.css" rel="stylesheet">
+  <!-- <link href="css/blockPage.css" rel="stylesheet"> -->
+  <style>
+    body {
+      background-image: url(../twinPeaksWaiting.gif);
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center;
+      min-height: 100vh;
+      min-width: 100vh;   
+      margin: 0;
+      overflow: hidden;
+    }
+  </style>
   <title>Let's take a break</title>
 </head>
 <body>
-  <div id="content-wrapper">
-    <p class="blocking-text">You still have time to change your mind</p>
-    <p class="blocking-text" id="timer-countdown"></p>
+  <div class="flex flex-col items-center m-0" id="content-wrapper">
+    <p class="blocking-text text-white text-[calc(1.7vw+1.7vh)] mt-[2vh]">You still have time to change your mind</p>
+    <p class="blocking-text text-white text-[calc(1.7vw+1.7vh)] mt-[2vh]" id="timer-countdown"></p>
   </div>
   <script src="../scripts/blockPage.js" type="module"></script>    
 </body>

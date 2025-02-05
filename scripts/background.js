@@ -1,10 +1,7 @@
-// Problems:
-// 1) does not persist blocking data
-// 2) blocking data is undefined if the background script is woken up
-
 import {
   loadBlockData,
   scanTabMap,
+  extractHostname,
 } from "./background-modules/utils.js";
 import { DataManager } from "./background-modules/DataManager.js";
 import { MessageManager } from "./background-modules/MessageManager.js";
@@ -12,25 +9,23 @@ import { MessageManager } from "./background-modules/MessageManager.js";
 let blockingData = undefined;
 let dataManager = undefined;
 let messageManager = undefined;
-let tabIdToPreviousHostname = undefined;
+let prevHosts = undefined;
 
 const init = async () => {
   blockingData = await loadBlockData();
-  console.log("Loaded block data:", blockingData);
+  console.log("Loaded blocking data:", blockingData);
 
   dataManager = new DataManager(blockingData);
   messageManager = new MessageManager(dataManager);
 
-  tabIdToPreviousHostname = await scanTabMap();
-  console.log("Scanned tabs:", tabIdToPreviousHostname);
+  prevHosts = await scanTabMap();
+  console.log("Scanned tabs:", prevHosts);
 };
-init();
-// const initIfUndefined = async () => {
-//   if (blockingData === undefined) {
-//     await init();
-//   }
-// }
-// initIfUndefined();
+const initIfUndefined = async () => {
+  if (prevHosts === undefined) {
+    await init();
+  }
+};
 
 chrome.runtime.onUpdateAvailable.addListener(() => {
   console.log("updating extension to the newest version");
@@ -38,56 +33,46 @@ chrome.runtime.onUpdateAvailable.addListener(() => {
 });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  messageManager.getMessage(message, sendResponse);
+  initIfUndefined().then(() => {
+    messageManager.getMessage(message, sendResponse);
+  });
+
+  return true;
 });
-
-// executes every time when the tab was updated/added
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (
-    !tab.url.startsWith("chrome://") &&
-    !tab.url.startsWith("chrome-extension://")
-  ) {
-    if (changeInfo.status === "complete") {
-      const hostname = extractHostname(tab.url);
-      console.log("Previous: ", tabIdToPreviousHostname.get(tabId));
-      console.log("To: ", tab.url);
-      if (
-        checkBlocking(hostname) &&
-        !equalPreviousURL(tabId, hostname) &&
-        hostname != "google.com"
-      ) {
-        // adding the tabId to the map of all current tabs
-        // (preventing blocking the same website serveral times in a row)
-        tabIdToPreviousHostname.set(tabId, hostname);
-        console.log("Blocking");
-        console.log("Blocking time: ", blockingData.blockingTime);
-
-        const navigatingURL = tab.url;
-        chrome.tabs.update(tab.id, { url: "pages/blockPage.html" }).then(() => {
-          setTimeout(() => {
-            // checking if the tab was closed while timeout
-            if (tabIdToPreviousHostname.has(tab.id)) {
-              chrome.tabs.update(tab.id, { url: navigatingURL });
-            }
-          }, blockingData.blockingTime * 1000 + 200);
-        });
-      }
-    }
-  }
-});
-
-let checkBlocking = (hostname) => {
-  if (blockingData.isBlocklistMode) {
-    return blockingData.blocklist.includes(hostname);
-  }
-
-  return !blockingData.allowlist.includes(hostname);
-};
 
 chrome.tabs.onRemoved.addListener((tabId) => {
-  tabIdToPreviousHostname.delete(tabId);
+  if (prevHosts !== undefined) {
+    prevHosts.delete(tabId);
+  }
 });
 
-function equalPreviousURL(tabId, hostname) {
-  return hostname === tabIdToPreviousHostname.get(tabId);
-}
+const isChromeUrl = (url) => {
+  return url.startsWith("chrome://") || url.startsWith("chrome-extension://");
+};
+const shoudBlock = (tab) => {
+  return (
+    !isChromeUrl(tab.url) &&
+    dataManager.containsUrl(tab.url) &&
+    prevHosts.get(tab.id) !== extractHostname(tab.url)
+  );
+};
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  initIfUndefined().then(() => {
+    if (changeInfo.status === "complete") {
+      if (shoudBlock(tab)) {
+        prevHosts.set(tabId, extractHostname(tab.url));
+        chrome.tabs
+          .update(tabId, { url: "./pages/blockPage.html" })
+          .then(() => {
+            setTimeout(() => {
+              if (prevHosts.has(tabId)) {
+                chrome.tabs.update(tabId, { url: tab.url });
+              }
+            }, dataManager.blockingTime * 1000 + 200);
+          });
+      }
+    }
+  });
+
+  return true;
+});

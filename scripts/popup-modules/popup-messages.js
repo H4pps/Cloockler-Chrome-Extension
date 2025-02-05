@@ -4,7 +4,6 @@ export const getBlockingTime = async () => {
       text: "get blocking time",
     });
 
-    console.log(response);
     return response.time;
   } catch (error) {
     console.error("Error getting blocking time:", error);

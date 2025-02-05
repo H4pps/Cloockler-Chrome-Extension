@@ -26,11 +26,12 @@ export class DataManager {
     return this.#blockingTime;
   }
   set blockingTime(time) {
-    if (time <= MIN_BLOCKING_TIME || time >= MAX_BLOCKING_TIME) {
+    if (time < MIN_BLOCKING_TIME || time > MAX_BLOCKING_TIME) {
       throw new Error("Time is out of range");
     }
 
     this.#blockingTime = time;
+    this.#saveData();
   }
 
   get activeList() {
@@ -49,6 +50,11 @@ export class DataManager {
     this.#saveData();
 
     return hostname;
+  }
+
+  containsUrl(url) {
+    const hostname = extractHostname(url);
+    return this.#activeList.has(hostname);
   }
 
   deleteHostname(hostname) {

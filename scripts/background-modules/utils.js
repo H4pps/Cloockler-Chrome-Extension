@@ -13,7 +13,14 @@ export const loadBlockData = async () => {
       };
     }
 
-    return JSON.parse(loadedData[BLOCK_KEY]);
+    const loadedObj = JSON.parse(loadedData[BLOCK_KEY]);
+    const returnObj = {};
+    returnObj.blocklist = loadedObj.blocklist === undefined ? [] : loadedObj.blocklist;
+    returnObj.allowlist = loadedObj.allowlist === undefined ? [] : loadedObj.allowlist;
+    returnObj.blockingTime = loadedObj.blockingTime === undefined ? 15 : loadedObj.blockingTime;
+    returnObj.isBlocklistMode = loadedObj.isBlocklistMode === undefined ? true : loadedObj.isBlocklistMode;
+
+    return returnObj;
   } catch (error) {
     console.error(
       `Error loading program data (key: ${BLOCK_KEY}):`,
@@ -39,7 +46,12 @@ export const scanTabMap = async () => {
 
     const tabMap = new Map();
     for (const tab of scannedTabs) {
-      tabMap.set(tab.id, tab.url);
+      try {
+        const hostname = extractHostname(tab.url);
+        tabMap.set(tab.id, hostname);
+      } catch (error) {
+        tabMap.set(tab.id, tab.url);
+      }
     }
 
     return tabMap;
@@ -56,7 +68,6 @@ export const extractHostname = (url) => {
       throw new Error("Got chrome-extension:// url");
     }
 
-    // adding "https://" if the string does not start with that
     if (!url.startsWith("https://") && !url.startsWith("http://")) {
       url = "https://" + url;
     }
@@ -76,8 +87,7 @@ export const extractHostname = (url) => {
 
     return hostname;
   } catch (error) {
-    console.log("Errorr in the url: ", url);
-    console.log(error);
+    console.log("Error while extracting hostname from the url: ", url);
     throw new Error("URL is not in the correct format."); // change later
   }
 };

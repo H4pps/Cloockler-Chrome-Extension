@@ -29,7 +29,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     function updateTimer() {
       --time;
 
-      if (time > 0) {
+      if (time >= 0) {
         chrome.storage.session.set({ [TIME_KEY]: time });
         timerCountdown.textContent = convertSecondsToTimerText(time);
       }

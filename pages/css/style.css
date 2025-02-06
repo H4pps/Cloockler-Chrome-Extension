@@ -629,6 +629,10 @@ video {
   display: flex;
 }
 
+.table {
+  display: table;
+}
+
 .list-item {
   display: list-item;
 }

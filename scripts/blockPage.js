@@ -1,4 +1,4 @@
-const TIME_KEY = "savedTime";
+let TIME_KEY = "savedTime";
 const timerCountdown = document.querySelector("#timer-countdown");
 
 const getStartingTime = async () => {
@@ -19,23 +19,38 @@ const convertSecondsToTimerText = (durationInSeconds) => {
   return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
 };
 
-getStartingTime().then((time) => {
-  console.log("time in blockpage:", time)
-  timerCountdown.textContent = convertSecondsToTimerText(time);
+chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+  TIME_KEY += tabs[0].id;
 
-  function updateTimer() {
-    --time;
+  getStartingTime().then((time) => {
+    console.log("time in blockpage:", time)
+    timerCountdown.textContent = convertSecondsToTimerText(time);
 
-    if (time < 0) {
-      clearInterval(time);
-    } else {
-      chrome.storage.session.set({ [TIME_KEY]: time });
-      timerCountdown.textContent = convertSecondsToTimerText(time);
+    function updateTimer() {
+      --time;
+
+      if (time > 0) {
+        chrome.storage.session.set({ [TIME_KEY]: time });
+        timerCountdown.textContent = convertSecondsToTimerText(time);
+      }
     }
-  }
 
-  setTimeout(() => {
-    updateTimer();
-    setInterval(updateTimer, 1000);
-  }, 400);
+    setTimeout(() => {
+      updateTimer();
+      setInterval(updateTimer, 1000);
+    }, 400);
+  });
+});
+
+
+const navEntries = performance.getEntriesByType("navigation");
+if (navEntries.length > 0 && navEntries[0].type === "navigation") {
+  await chrome.storage.session
+}
+
+window.addEventListener("load", async () => {
+  const navEntries = performance.getEntriesByType("navigation");
+  if (navEntries.length > 0 && navEntries[0].type !== "reload") {  // deleting the time key if the page is closed
+    await chrome.storage.session.remove(TIME_KEY);
+  }
 });

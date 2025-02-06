@@ -55,6 +55,7 @@ timeInput.addEventListener("keypress", (event) => {
   if (event.key === "Enter") {
     event.preventDefault();
     setTime(parseInt(timeInput.value));
+    event.target.blur();
   }
 });
 

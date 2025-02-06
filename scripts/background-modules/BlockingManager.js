@@ -14,13 +14,20 @@ export class BlockingManager {
   }
 
   processTab(tab) {
+    console.log("processing tab url:", tab.url);  
+    console.log("processing tab:", tab);
+    console.log("prev tab:", this.#prevHosts[tab.id]);
     if (!isChromeUrl(tab.url)) {
       this.#clearTabTimeout(tab.id);
 
       if (this.#shouldBlock(tab)) {
         this.#block(tab);
+      } else {
+        this.#prevHosts.set(tab.id, extractHostname(tab.url));
       }
-    }
+    } else {
+      this.#prevHosts.set(tab.id, "chromeUrl");
+    } 
   }
 
   deleteTab(tabId) {
@@ -36,6 +43,7 @@ export class BlockingManager {
   }
 
   #block(tab) {
+    console.log("blocking tab");
     this.#temporarilyBlock(tab);
   }
 
@@ -46,10 +54,11 @@ export class BlockingManager {
   }
 
   #temporarilyBlock(tab) {
-    this.#prevHosts.set(tab.id, extractHostname(tab.url));
     chrome.tabs.update(tab.id, { url: BLOCK_PAGE_PATH }).then(() => {
       const newTimeoutId = setTimeout(() => {
         if (this.#prevHosts.has(tab.id)) {
+          this.#prevHosts.set(tab.id, extractHostname(tab.url));
+          console.log("prevs:", this.#prevHosts);
           chrome.tabs.update(tab.id, { url: tab.url });
           this.#timeouts.delete(tab.id);
         }

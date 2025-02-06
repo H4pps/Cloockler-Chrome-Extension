@@ -14,9 +14,6 @@ export class BlockingManager {
   }
 
   processTab(tab) {
-    console.log("processing tab url:", tab.url);  
-    console.log("processing tab:", tab);
-    console.log("prev tab:", this.#prevHosts[tab.id]);
     if (!isChromeUrl(tab.url)) {
       this.#clearTabTimeout(tab.id);
 
@@ -43,7 +40,6 @@ export class BlockingManager {
   }
 
   #block(tab) {
-    console.log("blocking tab");
     this.#temporarilyBlock(tab);
   }
 

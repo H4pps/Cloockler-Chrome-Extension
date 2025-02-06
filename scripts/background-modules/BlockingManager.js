@@ -13,16 +13,14 @@ export class BlockingManager {
     this.#timeouts = new Map();
   }
 
-  shouldBlock(tab) {
-    return (
-      !isChromeUrl(tab.url) &&
-      this.#dataManager.containsUrl(tab.url) &&
-      this.#prevHosts.get(tab.id) !== extractHostname(tab.url)
-    );
-  }
+  processTab(tab) {
+    if (!isChromeUrl(tab.url)) {
+      this.#clearTabTimeout(tab.id);
 
-  block(tab) {
-    this.#temporarilyBlock(tab);
+      if (this.#shouldBlock(tab)) {
+        this.#block(tab);
+      }
+    }
   }
 
   deleteTab(tabId) {
@@ -30,13 +28,26 @@ export class BlockingManager {
     this.#timeouts.delete(tabId);
   }
 
+  #shouldBlock(tab) {
+    return (
+      this.#dataManager.containsUrl(tab.url) &&
+      this.#prevHosts.get(tab.id) !== extractHostname(tab.url)
+    );
+  }
+
+  #block(tab) {
+    this.#temporarilyBlock(tab);
+  }
+
+  #clearTabTimeout(tabId) {
+    if (this.#timeouts.has(tabId)) {
+      clearTimeout(this.#timeouts.get(tabId));
+    }
+  }
+
   #temporarilyBlock(tab) {
     this.#prevHosts.set(tab.id, extractHostname(tab.url));
     chrome.tabs.update(tab.id, { url: "./pages/blockPage.html" }).then(() => {
-      if (this.#timeouts.has(tab.id)) {
-        clearTimeout(this.#timeouts.get(tab.id));
-      } 
-
       const newTimeoutId = setTimeout(() => {
         if (this.#prevHosts.has(tab.id)) {
           chrome.tabs.update(tab.id, { url: tab.url });

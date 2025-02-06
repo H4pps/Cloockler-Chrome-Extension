@@ -11,20 +11,19 @@ let blockingManager = undefined;
 
 const init = async () => {
   blockingData = await loadBlockData();
-  console.log("Loaded blocking data:", blockingData);
+  // console.log("Loaded blocking data:", blockingData);
 
   dataManager = new DataManager(blockingData);
   messageManager = new MessageManager(dataManager);
 
   prevHosts = await scanTabMap();
   blockingManager = new BlockingManager(dataManager, prevHosts);
-  console.log("Scanned tabs:", prevHosts);
+  // console.log("Scanned tabs:", prevHosts);
 };
 const initIfUndefined = async () => {
   if (blockingManager === undefined) {
     await init();
   }
-  console.log("def initted");
 };
 
 chrome.runtime.onUpdateAvailable.addListener(() => {
@@ -47,16 +46,9 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 });
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  console.log("Tab updated:", tabId, changeInfo, tab);
   initIfUndefined().then(() => {
-    console.log("Current blocking manager:", blockingManager);
     if (changeInfo.status === "complete") {
-      console.log("Tab loaded:", tab);
-      console.log("Current blocking manager:", blockingManager);
-      if (blockingManager.shouldBlock(tab)) {
-        console.log("BLOCKING!!!");
-        blockingManager.block(tab);
-      }
+      blockingManager.processTab(tab);  
     }
   });
 

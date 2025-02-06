@@ -9,9 +9,6 @@ export class BlockingManager {
   constructor(dataManager, prevHosts) {
     this.#dataManager = dataManager;
     this.#prevHosts = prevHosts;
-
-    console.log(dataManager, prevHosts);
-    console.log("got:", this.#dataManager, this.#prevHosts);
   }
 
   shouldBlock(tab) {

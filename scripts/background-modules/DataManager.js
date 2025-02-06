@@ -18,7 +18,8 @@ export class DataManager {
     this.#setActiveList();
   }
 
-  get blockingMode() { // returns true if blocklist mode is active, otherwise false
+  get blockingMode() {
+    // returns true if blocklist mode is active, otherwise false
     return this.#isBlocklistMode;
   }
 
@@ -68,7 +69,9 @@ export class DataManager {
   }
 
   #setActiveList() {
-    this.#activeList = this.#isBlocklistMode ? this.#blocklist : this.#allowlist;
+    this.#activeList = this.#isBlocklistMode
+      ? this.#blocklist
+      : this.#allowlist;
   }
 
   #saveData() {

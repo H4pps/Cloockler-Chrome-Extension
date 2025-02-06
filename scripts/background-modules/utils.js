@@ -15,22 +15,26 @@ export const loadBlockData = async () => {
 
     const loadedObj = JSON.parse(loadedData[BLOCK_KEY]);
     const returnObj = {};
-    returnObj.blocklist = loadedObj.blocklist === undefined ? [] : loadedObj.blocklist;
-    returnObj.allowlist = loadedObj.allowlist === undefined ? [] : loadedObj.allowlist;
-    returnObj.blockingTime = loadedObj.blockingTime === undefined ? 15 : loadedObj.blockingTime;
-    returnObj.isBlocklistMode = loadedObj.isBlocklistMode === undefined ? true : loadedObj.isBlocklistMode;
+    returnObj.blocklist =
+      loadedObj.blocklist === undefined ? [] : loadedObj.blocklist;
+    returnObj.allowlist =
+      loadedObj.allowlist === undefined ? [] : loadedObj.allowlist;
+    returnObj.blockingTime =
+      loadedObj.blockingTime === undefined ? 15 : loadedObj.blockingTime;
+    returnObj.isBlocklistMode =
+      loadedObj.isBlocklistMode === undefined
+        ? true
+        : loadedObj.isBlocklistMode;
 
     return returnObj;
   } catch (error) {
-    console.error(
-      `Error loading program data (key: ${BLOCK_KEY}):`,
-      error
-    );
+    console.error(`Error loading program data (key: ${BLOCK_KEY}):`, error);
     throw error;
   }
 };
 
-export const saveToBlockData = async (data) => { // will be called only form background.js 
+export const saveToBlockData = async (data) => {
+  // will be called only form background.js
   try {
     console.log("SAVED DATA");
     chrome.storage.sync.set({ [BLOCK_KEY]: JSON.stringify(data) });
@@ -90,4 +94,8 @@ export const extractHostname = (url) => {
     console.log("Error while extracting hostname from the url: ", url);
     throw new Error("URL is not in the correct format."); // change later
   }
+};
+
+export const isChromeUrl = (url) => {
+  return url.startsWith("chrome://") || url.startsWith("chrome-extension://");
 };

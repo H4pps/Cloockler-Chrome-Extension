@@ -1,7 +1,6 @@
 const timerCountdown = document.querySelector("#timer-countdown");
 
-chrome.runtime.sendMessage({text: "get blocking time"})
-.then(response => {
+chrome.runtime.sendMessage({ text: "get blocking time" }).then((response) => {
   let durationInSeconds = response.time; // setting time for the countdown time
   timerCountdown.textContent = convertSecondsToTimerText(durationInSeconds);
 
@@ -19,9 +18,9 @@ chrome.runtime.sendMessage({text: "get blocking time"})
   let timerInterval = setInterval(updateTimer, 1000);
 });
 
-let convertSecondsToTimerText = durationInSeconds => {
+let convertSecondsToTimerText = (durationInSeconds) => {
   const minutes = Math.floor(durationInSeconds / 60);
   const seconds = durationInSeconds % 60;
 
-  return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-}
+  return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+};

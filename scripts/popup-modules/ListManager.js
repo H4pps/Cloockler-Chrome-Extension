@@ -5,17 +5,17 @@ export class ListManager {
 
   constructor(urlList, domWrapper) {
     this.#urlSet = new Set(urlList);
-    this.#domWrapper = domWrapper
+    this.#domWrapper = domWrapper;
 
-    this.#domWrapper.addEventListener("click", event => {
+    this.#domWrapper.addEventListener("click", (event) => {
       if (event.target.classList.contains("delete-button")) {
         const url = event.target.parentElement.dataset.url;
         this.deleteUrl(url); // deletes the url from the set
-        deleteFromListMessage(url); // deletes the url from the background  
+        deleteFromListMessage(url); // deletes the url from the background
         this.#domWrapper.removeChild(event.target.parentElement); // deletes the url from the document
       }
     });
-  } 
+  }
 
   /**
    * @param {*} urls list of urls to be passed to the list
@@ -25,7 +25,7 @@ export class ListManager {
   }
 
   /**
-   * 
+   *
    * @param {*} url url to be added to the list
    * @returns a promise that resolves to the response from the background
    */
@@ -40,7 +40,7 @@ export class ListManager {
   }
 
   /**
-   * 
+   *
    * @param {*} url url to be deleted from the list
    */
   deleteUrl(url) {
@@ -58,20 +58,20 @@ export class ListManager {
   }
 
   /**
-   * 
+   *
    * @param {*} url single url to be added to the head of the list
    */
   renderElement(url) {
-    this.#domWrapper.innerHTML = 
-      this.urlElementDomString(url) + this.#domWrapper.innerHTML;  
+    this.#domWrapper.innerHTML =
+      this.urlElementDomString(url) + this.#domWrapper.innerHTML;
   }
 
   /**
-   * 
+   *
    * @param {*} url rul of the element to be added to the list
    * @returns an html string that represents the url element
    */
-  urlElementDomString(url) { 
+  urlElementDomString(url) {
     return `
     <div class="list-item" data-url="${url}">
       <span class="url-span">${url}</span>
@@ -79,5 +79,4 @@ export class ListManager {
     </div>
     `;
   }
-
 }

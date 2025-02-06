@@ -1,4 +1,4 @@
-export const getBlockingTime = async () => { 
+export const getBlockingTime = async () => {
   try {
     const response = await chrome.runtime.sendMessage({
       text: "get blocking time",
@@ -52,7 +52,7 @@ export const getList = async (mode) => {
   }
 };
 
-export const deleteFromListMessage = async (url) => { 
+export const deleteFromListMessage = async (url) => {
   try {
     await chrome.runtime.sendMessage({
       text: "delete from list",
@@ -61,7 +61,7 @@ export const deleteFromListMessage = async (url) => {
   } catch (error) {
     console.error("Error deleting from list:", error);
     throw error;
-  } 
+  }
 };
 
 export const setToListMessage = async (url) => {
@@ -75,7 +75,7 @@ export const setToListMessage = async (url) => {
   } catch (error) {
     console.error("Error setting to list:", error);
     throw error;
-  }  
+  }
 };
 
 export const changeListModeMessage = async () => {
@@ -89,4 +89,4 @@ export const changeListModeMessage = async () => {
     console.error("Error changing list mode:", error);
     throw error;
   }
-}
+};

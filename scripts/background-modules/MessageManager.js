@@ -39,7 +39,7 @@ export class MessageManager {
   #getListMode() {
     this.#response = { mode: this.#dataManager.blockingMode };
   }
-  
+
   #changeListMode() {
     this.#dataManager.changeMode();
     this.#response = { mode: this.#dataManager.blockingMode };
@@ -55,7 +55,7 @@ export class MessageManager {
       const hostname = this.#dataManager.addUrl(url);
       this.#response = { type: "OK", hostname: hostname };
     } catch (error) {
-      this.#response = { type: "ERROR", message: error.message}; 
+      this.#response = { type: "ERROR", message: error.message };
     }
   }
 

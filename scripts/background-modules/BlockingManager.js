@@ -1,6 +1,6 @@
 import { isChromeUrl, extractHostname } from "./utils.js";
 
-const BLOCK_PAGE_PATH = "/.pages/blockPage.html";
+const BLOCK_PAGE_PATH = "./pages/blockPage.html";
 
 export class BlockingManager {
   #dataManager;
@@ -47,7 +47,7 @@ export class BlockingManager {
 
   #temporarilyBlock(tab) {
     this.#prevHosts.set(tab.id, extractHostname(tab.url));
-    chrome.tabs.update(tab.id, { url: "./pages/blockPage.html" }).then(() => {
+    chrome.tabs.update(tab.id, { url: BLOCK_PAGE_PATH }).then(() => {
       const newTimeoutId = setTimeout(() => {
         if (this.#prevHosts.has(tab.id)) {
           chrome.tabs.update(tab.id, { url: tab.url });

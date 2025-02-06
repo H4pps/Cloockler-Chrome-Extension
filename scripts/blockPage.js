@@ -1,4 +1,4 @@
-const timerCountdown = document.getElementById("timer-countdown");
+const timerCountdown = document.querySelector("#timer-countdown");
 
 chrome.runtime.sendMessage({text: "get blocking time"})
 .then(response => {

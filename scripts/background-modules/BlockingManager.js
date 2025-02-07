@@ -35,7 +35,8 @@ export class BlockingManager {
   #shouldBlock(tab) {
     return (
       this.#dataManager.containsUrl(tab.url) &&
-      this.#prevHosts.get(tab.id) !== extractHostname(tab.url)
+      (!this.#prevHosts.get(tab.id) === undefined || 
+      this.#prevHosts.get(tab.id) !== extractHostname(tab.url))
     );
   }
 
@@ -54,7 +55,6 @@ export class BlockingManager {
       const newTimeoutId = setTimeout(() => {
         if (this.#prevHosts.has(tab.id)) {
           this.#prevHosts.set(tab.id, extractHostname(tab.url));
-          console.log("prevs:", this.#prevHosts);
           chrome.tabs.update(tab.id, { url: tab.url });
           this.#timeouts.delete(tab.id);
         }

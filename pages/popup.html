@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+      .list-item {
+        display: flex;
+        justify-content: center;
+
+        background-color: none;
+        border-radius: 20px;
+        transition: background-color 85ms linear;
+      }
+
+      .list-item:hover {
+        background-color: #f0f0f0;
+      }
+      .url-span {
+        font-size: 15px;
+        width: 280px;
+        padding: 8px 13px;
+
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+
+      .delete-button {
+        transition: background-color 85ms linear;
+
+        margin-left: 10px;
+        padding: 10px 12px;
+        background: none;
+        border: none;
+        border-radius: 9999px;
+        font-size: 12px;
+      }
+
+      .delete-button:hover {
+        background-color: rgba(255, 0, 0, 0.2);
+      }
+
+      .delete-button:active {
+        transition: none;
+        background-color: rgba(255, 0, 0, 0.3);
+      }
+    </style>
+  </head>
+  <body class="bg-[#FFFDFB]">
+    <div id="input-section" class="flex justify-center my-5 mx-[10px]">
+      <input
+        type="text"
+        placeholder="Enter URL of the website"
+        id="url-input"
+        class="bg-[#F0F0F0] transition-colors duration-75 w-[280px] py-2 px-3 border-0 rounded-full text-[15px] hover:bg-[#E8E8E8]"
+      />
+      <button
+        id="url-add-btn"
+        class="bg-[#F0F0F0] transition-colors duration-75 ml-[10px] py-2 px-[11px] border-0 rounded-full text-[15px] hover:bg-[#E8E8E8] active:bg-[#d8d8d8]"
+      >
+        ＋
+      </button>
+    </div>
+
+    <h4 id="error-p" class="text-red-500 my-1 mx-6"></h4>
+
+    <div id="blocklist-section" class="my-5 mx-[10px]">
+      <div
+        id="blocking-settings"
+        class="flex justify-between items-center mt-5 mr-[10px] mb-[10px] ml-[10px]"
+      >
+        <button
+          id="mode-btn"
+          class="bg-[#F0F0F0] transition-colors duration-75 py-2 px-3 border-0 rounded-full text-[22px] hover:bg-[#E8E8E8] active:bg-[#d8d8d8]"
+        ></button>
+        <div id="blocking-time-section" class="flex items-center">
+          <p id="blocking-text" class="text-[15px] mr-[10px]">Blocking for:</p>
+          <input
+            class="bg-[#F0F0F0] w-[50px] py-[10px] px-[12px] border-0 rounded-full text-[18px] text-center"
+            type="number"
+            id="time-inp"
+          />
+          <div id="arrow-section" class="flex flex-col justify-center ml-[3px]">
+            <button
+              id="add-time-btn"
+              class="bg-[#F0F0F0] transition-colors duration-75 py-[2px] px-[4px] border-0 rounded-full text-[7px] hover:bg-[#E8E8E8] active:bg-[#d8d8d8]"
+            >
+              ▲
+            </button>
+            <button
+              id="subtract-time-btn"
+              class="bg-[#F0F0F0] transition-colors duration-75 py-[2px] px-[4px] border-0 rounded-full text-[7px] hover:bg-[#E8E8E8] active:bg-[#d8d8d8]"
+            >
+              ▼
+            </button>
+          </div>
+        </div>
+      </div>
+      <div id="url-list" class="h-[150px] overflow-y-auto"></div>
+    </div>
+
+    <script type="module" src="../scripts/popup.js"></script>
+  </body>
+</html>

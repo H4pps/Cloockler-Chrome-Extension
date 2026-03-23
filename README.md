@@ -1,5 +1,6 @@
 # Productivity-browser-extension
-Blocks unnecessary distractions
+
+Blocks unnecessary distractions 
 
 The app blocks preferred websites for just a few seconds - a time that could help you change your mind and go back to working or studying.
 

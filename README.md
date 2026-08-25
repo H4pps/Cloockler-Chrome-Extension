@@ -1,4 +1,4 @@
-# Productivity-browser-extension
+# Cloockler Extension
 
 Blocks unnecessary distractions 
 
